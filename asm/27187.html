@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6A33</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="27176.html">6A28</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#27187">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="27258.html">6A7A</a></span></td>
+</tr>
+</table>
+<div class="description">6A33: Display an exploding bike</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="27107.html">69E3</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27187"></span>6A33</td>
+<td class="instruction">LD HL,$5940</td>
+<td class="comment-11" rowspan="1">Start of row to display explosion. The column is dependent where the bike is</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27190"></span>6A36</td>
+<td class="instruction">LD A,($5DE1)</td>
+<td class="comment-11" rowspan="1">Get position of bike</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27193"></span>6A39</td>
+<td class="instruction">DEC A</td>
+<td class="comment-11" rowspan="3">Convert this to an on-screen attribute address</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27194"></span>6A3A</td>
+<td class="instruction">ADD A,L</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27195"></span>6A3B</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27196"></span>6A3C</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27197"></span>6A3D</td>
+<td class="instruction">LD DE,$001E</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27200"></span>6A40</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-11" rowspan="1">3 rows</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27202"></span>6A42</td>
+<td class="instruction">LD A,($5DE0)</td>
+<td class="comment-11" rowspan="1">Get current explosion attribute colour</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27205"></span>6A45</td>
+<td class="instruction">LD C,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27206"></span>6A46</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27207"></span>6A47</td>
+<td class="instruction">AND $F8</td>
+<td class="comment-11" rowspan="1">Clear INK colour</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27209"></span>6A49</td>
+<td class="instruction">OR C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27210"></span>6A4A</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-11" rowspan="5">Copy the attributes</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27211"></span>6A4B</td>
+<td class="instruction">INC HL</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27212"></span>6A4C</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27213"></span>6A4D</td>
+<td class="instruction">INC HL</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27214"></span>6A4E</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27215"></span>6A4F</td>
+<td class="instruction">ADD HL,DE</td>
+<td class="comment-11" rowspan="1">Move to next row</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27216"></span>6A50</td>
+<td class="instruction">DJNZ $6A42</td>
+<td class="comment-11" rowspan="1">Repeat until done</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="27218"></span>
+<div class="comments">
+<div class="paragraph">
+Put the explosion graphic on screen
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27218"></span>6A52</td>
+<td class="instruction">POP HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27219"></span>6A53</td>
+<td class="instruction">LD H,$48</td>
+<td class="comment-11" rowspan="1">Convert from attribute to display file</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27221"></span>6A55</td>
+<td class="instruction">LD DE,$6A7A</td>
+<td class="comment-11" rowspan="1"><a href="27258.html">6A7A</a> - Location of explosion graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27224"></span>6A58</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-11" rowspan="1">3 rows</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27226"></span>6A5A</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27227"></span>6A5B</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27228"></span>6A5C</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-11" rowspan="1">3 columns</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27230"></span>6A5E</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27231"></span>6A5F</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27232"></span>6A60</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27234"></span>6A62</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27235"></span>6A63</td>
+<td class="instruction">OR (HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27236"></span>6A64</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27237"></span>6A65</td>
+<td class="instruction">INC H</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27238"></span>6A66</td>
+<td class="instruction">INC DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27239"></span>6A67</td>
+<td class="instruction">DJNZ $6A62</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27241"></span>6A69</td>
+<td class="instruction">POP HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27242"></span>6A6A</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27245"></span>6A6D</td>
+<td class="instruction">ADD HL,BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27246"></span>6A6E</td>
+<td class="instruction">POP BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27247"></span>6A6F</td>
+<td class="instruction">DJNZ $6A5E</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27249"></span>6A71</td>
+<td class="instruction">POP HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27250"></span>6A72</td>
+<td class="instruction">INC HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27251"></span>6A73</td>
+<td class="instruction">POP BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27252"></span>6A74</td>
+<td class="instruction">DJNZ $6A5A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27254"></span>6A76</td>
+<td class="instruction">CALL <a href="25720.html">$6478</a></td>
+<td class="comment-11" rowspan="1">Play an explosion sound</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27257"></span>6A79</td>
+<td class="instruction">RET</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="27176.html">6A28</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#27187">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="27258.html">6A7A</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

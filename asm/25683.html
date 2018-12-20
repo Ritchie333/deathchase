@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6453</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25646.html">642E</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25683">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25720.html">6478</a></span></td>
+</tr>
+</table>
+<div class="description">6453: Move the tank</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="24457.html">5F89</a> and <a href="25596.html">63FC</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25683"></span>6453</td>
+<td class="instruction">LD HL,$5DCB</td>
+<td class="comment-11" rowspan="1">Set that a bonus enemy is on screen</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25686"></span>6456</td>
+<td class="instruction">RES 1,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25688"></span>6458</td>
+<td class="instruction">LD DE,$6332</td>
+<td class="comment-11" rowspan="1">Address of graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25691"></span>645B</td>
+<td class="instruction">BIT 7,(HL)</td>
+<td class="comment-11" rowspan="1">Have we hit the enemy?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25693"></span>645D</td>
+<td class="instruction">JR NZ,$6472</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25695"></span>645F</td>
+<td class="instruction">LD DE,$6322</td>
+<td class="comment-11" rowspan="1">Enemy has been hit, use the blown up graphic instead</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25698"></span>6462</td>
+<td class="instruction">LD A,($5DD1)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25701"></span>6465</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25703"></span>6467</td>
+<td class="instruction">JR NZ,$6472</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25705"></span>6469</td>
+<td class="instruction">LD HL,$650F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25708"></span>646C</td>
+<td class="instruction">LD ($5DCD),HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25711"></span>646F</td>
+<td class="instruction">LD DE,$6C0F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25714"></span>6472</td>
+<td class="instruction">LD A,($5DCA)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25717"></span>6475</td>
+<td class="instruction">INC A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25718"></span>6476</td>
+<td class="instruction">JR <a href="25646.html">$642E</a></td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25646.html">642E</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25683">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25720.html">6478</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

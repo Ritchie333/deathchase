@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 63FC</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25468.html">637C</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25596">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25646.html">642E</a></span></td>
+</tr>
+</table>
+<div class="description">63FC: Move the plane</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24457.html">5F89</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25596"></span>63FC</td>
+<td class="instruction">LD A,($5DCA)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25599"></span>63FF</td>
+<td class="instruction">CP C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25600"></span>6400</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25601"></span>6401</td>
+<td class="instruction">LD A,C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25602"></span>6402</td>
+<td class="instruction">CP $01</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25604"></span>6404</td>
+<td class="instruction">JR Z,<a href="25683.html">$6453</a></td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25606"></span>6406</td>
+<td class="instruction">CP $1F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25608"></span>6408</td>
+<td class="instruction">JR Z,$640F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25610"></span>640A</td>
+<td class="instruction">LD HL,$5DCB</td>
+<td class="comment-11" rowspan="1">Set that a bonus enemy is on screen</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25613"></span>640D</td>
+<td class="instruction">SET 1,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25615"></span>640F</td>
+<td class="instruction">LD DE,$631A</td>
+<td class="comment-11" rowspan="1"><a href="25370.html">631A</a> - Plane graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25618"></span>6412</td>
+<td class="instruction">BIT 7,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25620"></span>6414</td>
+<td class="instruction">JR Z,$641B</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25622"></span>6416</td>
+<td class="instruction">LD DE,$632A</td>
+<td class="comment-11" rowspan="1">We hit the plane, use the blown up graphic instead at <a href="25386.html">632A</a></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25625"></span>6419</td>
+<td class="instruction">JR $642B</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25627"></span>641B</td>
+<td class="instruction">LD A,($5DD1)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25630"></span>641E</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25632"></span>6420</td>
+<td class="instruction">JR NZ,$642B</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25634"></span>6422</td>
+<td class="instruction">LD DE,$6C07</td>
+<td class="comment-11" rowspan="1"><a href="27655.html">6C07</a> - Tank graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25637"></span>6425</td>
+<td class="instruction">LD HL,$650F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25640"></span>6428</td>
+<td class="instruction">LD ($5DCD),HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25643"></span>642B</td>
+<td class="instruction">LD A,($5DCA)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+
+<div class="comments">
+<div class="paragraph">
+Control continues to <a href="25646.html">642E</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25468.html">637C</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25596">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25646.html">642E</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

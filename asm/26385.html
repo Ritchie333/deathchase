@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6711</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26365.html">66FD</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26385">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26482.html">6772</a></span></td>
+</tr>
+</table>
+<div class="description">6711: CRASH - hit a tree! Bring it close up to the player so we crash into it</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="26365.html">66FD</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26385"></span>6711</td>
+<td class="instruction">LD H,$7F</td>
+<td class="comment-11" rowspan="1">Get the tree position</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26387"></span>6713</td>
+<td class="instruction">LD L,$8D</td>
+<td class="comment-11" rowspan="1">adjusted for where</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26389"></span>6715</td>
+<td class="instruction">LD A,($5DDF)</td>
+<td class="comment-11" rowspan="1">the player is travelling</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26392"></span>6718</td>
+<td class="instruction">ADD A,L</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26393"></span>6719</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26394"></span>671A</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26396"></span>671C</td>
+<td class="instruction">LD (HL),$20</td>
+<td class="comment-11" rowspan="1">Put a tree here</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26398"></span>671E</td>
+<td class="instruction">INC HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26399"></span>671F</td>
+<td class="instruction">DJNZ $671C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26401"></span>6721</td>
+<td class="instruction">LD B,$03</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26403"></span>6723</td>
+<td class="instruction">LD (HL),$40</td>
+<td class="comment-11" rowspan="1">Put a big tree here</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26405"></span>6725</td>
+<td class="instruction">INC HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26406"></span>6726</td>
+<td class="instruction">DJNZ $6723</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26408"></span>6728</td>
+<td class="instruction">CALL <a href="24457.html">$5F89</a></td>
+<td class="comment-11" rowspan="1">Recalculate trees</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26411"></span>672B</td>
+<td class="instruction">LD HL,$504D</td>
+<td class="comment-11" rowspan="1">Copy the bottom of the tree down so it meets the bike</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26414"></span>672E</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26416"></span>6730</td>
+<td class="instruction">PUSH HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26417"></span>6731</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26418"></span>6732</td>
+<td class="instruction">LD B,$07</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26420"></span>6734</td>
+<td class="instruction">LD A,($502F)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26423"></span>6737</td>
+<td class="instruction">OR (HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26424"></span>6738</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26425"></span>6739</td>
+<td class="instruction">INC HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26426"></span>673A</td>
+<td class="instruction">DJNZ $6734</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26428"></span>673C</td>
+<td class="instruction">POP BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26429"></span>673D</td>
+<td class="instruction">POP HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26430"></span>673E</td>
+<td class="instruction">INC H</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26431"></span>673F</td>
+<td class="instruction">DJNZ $6730</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26433"></span>6741</td>
+<td class="instruction">XOR A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26434"></span>6742</td>
+<td class="instruction">LD ($5DE8),A</td>
+<td class="comment-11" rowspan="1">Turn off firing</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26437"></span>6745</td>
+<td class="instruction">LD A,$02</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26439"></span>6747</td>
+<td class="instruction">LD ($5DEC),A</td>
+<td class="comment-11" rowspan="1">Stop the bike</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26442"></span>674A</td>
+<td class="instruction">CALL <a href="26497.html">$6781</a></td>
+<td class="comment-11" rowspan="1">Play a "hit tree" effect</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26445"></span>674D</td>
+<td class="instruction">CALL <a href="25904.html">$6530</a></td>
+<td class="comment-11" rowspan="1">Clear the screen</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26448"></span>6750</td>
+<td class="instruction">CALL <a href="26482.html">$6772</a></td>
+<td class="comment-11" rowspan="1">and the playing area</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26451"></span>6753</td>
+<td class="instruction">CALL <a href="26731.html">$686B</a></td>
+<td class="comment-11" rowspan="1">Stop firing</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26454"></span>6756</td>
+<td class="instruction">CALL <a href="26904.html">$6918</a></td>
+<td class="comment-11" rowspan="1">Restore the display</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26457"></span>6759</td>
+<td class="instruction">CALL <a href="26331.html">$66DB</a></td>
+<td class="comment-11" rowspan="1">and the handlebars</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26460"></span>675C</td>
+<td class="instruction">LD A,($6987)</td>
+<td class="comment-11" rowspan="1">Get the number of lives</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26463"></span>675F</td>
+<td class="instruction">DEC A</td>
+<td class="comment-11" rowspan="1">Remove one</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26464"></span>6760</td>
+<td class="instruction">LD ($6987),A</td>
+<td class="comment-11" rowspan="1">Set the new value</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26467"></span>6763</td>
+<td class="instruction">CP $30</td>
+<td class="comment-11" rowspan="1">Have we run out of lives?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26469"></span>6765</td>
+<td class="instruction">PUSH AF</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26470"></span>6766</td>
+<td class="instruction">CALL <a href="26996.html">$6974</a></td>
+<td class="comment-11" rowspan="1">Print new number of lives</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26473"></span>6769</td>
+<td class="instruction">POP AF</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26474"></span>676A</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1">More lives left</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26475"></span>676B</td>
+<td class="instruction">POP HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26476"></span>676C</td>
+<td class="instruction">CALL <a href="27505.html">$6B71</a></td>
+<td class="comment-11" rowspan="1">Game over!</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26479"></span>676F</td>
+<td class="instruction">JP <a href="26035.html">$65B3</a></td>
+<td class="comment-11" rowspan="1">Back to start sequence</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26365.html">66FD</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26385">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26482.html">6772</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

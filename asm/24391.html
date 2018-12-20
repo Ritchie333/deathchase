@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 5F47</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="24360.html">5F28</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#24391">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="24422.html">5F66</a></span></td>
+</tr>
+</table>
+<div class="description">5F47: Move left</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24318.html">5EFE</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="24391"></span>5F47</td>
+<td class="instruction">LD A,($5DDF)</td>
+<td class="comment-11" rowspan="1">Are we moving left?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24394"></span>5F4A</td>
+<td class="instruction">CP $FF</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24396"></span>5F4C</td>
+<td class="instruction">RET Z</td>
+<td class="comment-11" rowspan="1">No change</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24397"></span>5F4D</td>
+<td class="instruction">LD A,$A0</td>
+<td class="comment-11" rowspan="1">Change where to copy trees</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24399"></span>5F4F</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24400"></span>5F50</td>
+<td class="instruction">LD (IX+$00),$FC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24404"></span>5F54</td>
+<td class="instruction">LD HL,$5E36</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24407"></span>5F57</td>
+<td class="instruction">LD (HL),$08</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24409"></span>5F59</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24411"></span>5F5B</td>
+<td class="instruction">LD ($5DDF),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24414"></span>5F5E</td>
+<td class="instruction">LD A,$02</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24416"></span>5F60</td>
+<td class="instruction">LD ($5E8F),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24419"></span>5F63</td>
+<td class="instruction">JP <a href="26331.html">$66DB</a></td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="24360.html">5F28</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#24391">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="24422.html">5F66</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

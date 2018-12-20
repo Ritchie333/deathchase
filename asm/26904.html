@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6918</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26864.html">68F0</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26904">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26953.html">6949</a></span></td>
+</tr>
+</table>
+<div class="description">6918: Print the bike and static display</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="26035.html">65B3</a>, <a href="26385.html">6711</a> and <a href="27107.html">69E3</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26904"></span>6918</td>
+<td class="instruction">LD DE,$5080</td>
+<td class="comment-11" rowspan="1">Point to first line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26907"></span>691B</td>
+<td class="instruction">LD HL,$6DBF</td>
+<td class="comment-11" rowspan="1"><a href="28095.html">6DBF</a> - Start of display graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26910"></span>691E</td>
+<td class="instruction">LD B,$10</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26912"></span>6920</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26913"></span>6921</td>
+<td class="instruction">PUSH DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26914"></span>6922</td>
+<td class="instruction">LD BC,$0020</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26917"></span>6925</td>
+<td class="instruction">LDIR</td>
+<td class="comment-11" rowspan="1">Copy the line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26919"></span>6927</td>
+<td class="instruction">POP DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26920"></span>6928</td>
+<td class="instruction">POP BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26921"></span>6929</td>
+<td class="instruction">INC D</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26922"></span>692A</td>
+<td class="instruction">LD A,D</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26923"></span>692B</td>
+<td class="instruction">AND $07</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26925"></span>692D</td>
+<td class="instruction">JR NZ,$6932</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26927"></span>692F</td>
+<td class="instruction">LD DE,$50A0</td>
+<td class="comment-11" rowspan="1">Point to second line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26930"></span>6932</td>
+<td class="instruction">DJNZ $6920</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26932"></span>6934</td>
+<td class="instruction">LD DE,$5A80</td>
+<td class="comment-11" rowspan="1">Start of attribute buffer</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26935"></span>6937</td>
+<td class="instruction">LD BC,$0040</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26938"></span>693A</td>
+<td class="instruction">LDIR</td>
+<td class="comment-11" rowspan="1">Copy the attributes</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26940"></span>693C</td>
+<td class="instruction">CALL <a href="26985.html">$6969</a></td>
+<td class="comment-11" rowspan="1">Print the score</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26943"></span>693F</td>
+<td class="instruction">CALL <a href="26996.html">$6974</a></td>
+<td class="comment-11" rowspan="1">Print number of lives</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26946"></span>6942</td>
+<td class="instruction">CALL <a href="27067.html">$69BB</a></td>
+<td class="comment-11" rowspan="1">Print the range indicator</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26949"></span>6945</td>
+<td class="instruction">CALL <a href="27644.html">$6BFC</a></td>
+<td class="comment-11" rowspan="1">Print the high score</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26952"></span>6948</td>
+<td class="instruction">RET</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26864.html">68F0</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26904">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26953.html">6949</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

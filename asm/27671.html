@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6C17</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="27655.html">6C07</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#27671">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="27706.html">6C3A</a></span></td>
+</tr>
+</table>
+<div class="description">6C17: Signal bonus</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24692.html">6074</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27671"></span>6C17</td>
+<td class="instruction">CALL <a href="27706.html">$6C3A</a></td>
+<td class="comment-11" rowspan="1">Print bonus message</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27674"></span>6C1A</td>
+<td class="instruction">LD B,$0F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27676"></span>6C1C</td>
+<td class="instruction">PUSH BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27677"></span>6C1D</td>
+<td class="instruction">CALL <a href="27017.html">$6989</a></td>
+<td class="comment-11" rowspan="1">Print current score</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27680"></span>6C20</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-11" rowspan="1">Play a bonus sound</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27681"></span>6C21</td>
+<td class="instruction">LD D,$3C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27683"></span>6C23</td>
+<td class="instruction">LD E,$0A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27685"></span>6C25</td>
+<td class="instruction">LD H,$09</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27687"></span>6C27</td>
+<td class="instruction">XOR $10</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27689"></span>6C29</td>
+<td class="instruction">OUT ($FE),A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27691"></span>6C2B</td>
+<td class="instruction">LD B,E</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="27692"></span>6C2C</td>
+<td class="instruction">DJNZ $6C2C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27694"></span>6C2E</td>
+<td class="instruction">DEC H</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27695"></span>6C2F</td>
+<td class="instruction">JR NZ,$6C27</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27697"></span>6C31</td>
+<td class="instruction">DEC E</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27698"></span>6C32</td>
+<td class="instruction">DEC D</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27699"></span>6C33</td>
+<td class="instruction">JR NZ,$6C25</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27701"></span>6C35</td>
+<td class="instruction">EX AF,AF'</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27702"></span>6C36</td>
+<td class="instruction">POP BC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27703"></span>6C37</td>
+<td class="instruction">DJNZ $6C1C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="27705"></span>6C39</td>
+<td class="instruction">RET</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="27655.html">6C07</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#27671">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="27706.html">6C3A</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

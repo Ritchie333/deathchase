@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 5D20</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Loading system-Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-0">Prev: <a href=""></a></span></td>
+<td class="up">Up: <a href="Loading system.html#23840">Map</a></td>
+<td class="next"><span class="next-0">Next: <a href=""></a></span></td>
+</tr>
+</table>
+<div class="description">5D20: Main loading system</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+1 REM (c) 1983 M.ESTCOURT / RANDOMIZE USR 23296 and a bunch of other stuff to fool the naive hacker that there's a loading system at 5B00. (There isn't, and from a single BASIC program it's technically impossible)
+</div>
+<div class="paragraph">
+2 CLEAR 32767 : BORDER 0 : RANDOMIZE USR 23840 : RANDOMIZE USR 0
+</div>
+<div class="paragraph">
+3 SAVE "DEATHCHASE" LINE 2
+</div>
+<div class="paragraph">
+The BASIC is saved to start at line 2, which then passes control to <a href="23840.html">5D20</a>
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="23840"></span>5D20</td>
+<td class="instruction">LD A,$00</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23842"></span>5D22</td>
+<td class="instruction">LD ($5C8D),A</td>
+<td class="comment-11" rowspan="1">Set ATTR system variable to black PAPER and INK</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23845"></span>5D25</td>
+<td class="instruction">LD A,$02</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23847"></span>5D27</td>
+<td class="instruction">CALL $1601</td>
+<td class="comment-11" rowspan="1">Open screen channel</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23850"></span>5D2A</td>
+<td class="instruction">CALL $0D6B</td>
+<td class="comment-11" rowspan="1">CLS</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23853"></span>5D2D</td>
+<td class="instruction">LD HL,$5C6B</td>
+<td class="comment-11" rowspan="1">DF-SZ</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23856"></span>5D30</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-11" rowspan="1">Set it to 0, so pressing BREAK will crash</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23858"></span>5D32</td>
+<td class="instruction">LD A,$FF</td>
+<td class="comment-11" rowspan="1">Flag for a headerless loader</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23860"></span>5D34</td>
+<td class="instruction">SCF</td>
+<td class="comment-11" rowspan="1">Set to denote a LOAD, not a VERIFY</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23861"></span>5D35</td>
+<td class="instruction">LD IX,$4000</td>
+<td class="comment-11" rowspan="1">Start of main block</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23865"></span>5D39</td>
+<td class="instruction">LD DE,$3F48</td>
+<td class="comment-11" rowspan="1">Length of main block</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="23868"></span>
+<div class="comments">
+<div class="paragraph">
+Load the main block. There's no valid code after this, as it is overwritten by the main code block
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23868"></span>5D3C</td>
+<td class="instruction">CALL $0556</td>
+<td class="comment-11" rowspan="1">LD-BYTES</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="23871"></span>
+<div class="comments">
+<div class="paragraph">
+After the main block is loaded, control returns here
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23871"></span>5D3F</td>
+<td class="instruction">NOP</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="23944"></span>
+<div class="comments">
+<div class="paragraph">
+.... and a bunch of other NOPs until ....
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="23944"></span>5D88</td>
+<td class="instruction">RET M</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+
+<div class="comments">
+<div class="paragraph">
+This returns control to the BASIC subsystem at $2D2B. The game BASIC is now:
+</div>
+<div class="paragraph">
+1 POKE 23659,0
+</div>
+<div class="paragraph">
+2 RANDOMIZE USR 25983: GO TO 1
+</div>
+<div class="paragraph">
+Control returns to the second statement in line 2 (this is set up by the routine at $6B96 which saves the game). This then calls the main entry point at $657F.
+</div>
+</div>
+</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-0">Prev: <a href=""></a></span></td>
+<td class="up">Up: <a href="Loading system.html#23840">Map</a></td>
+<td class="next"><span class="next-0">Next: <a href=""></a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

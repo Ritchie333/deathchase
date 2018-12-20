@@ -1,0 +1,3188 @@
+; Selection of trees to copy to the main playing area.
+;
+;.
+;
+; When the player moves, a line is chosen at random
+g$5B00 DEFS $100
+
+; Enemy bike 1 direction (-1 = left, 0 = centre, 1 = right)
+g$5DC0 DEFB $00
+
+; Enemy bike 2 direction (-1 = left, 0 = centre, 1 = right)
+g$5DC1 DEFB $00
+
+; Number of frames before enemy bike 1 should change direction
+g$5DC2 DEFB $03
+
+; Number of frames before enemy bike 2 should change direction
+g$5DC3 DEFB $03
+
+; Number of units to move enemy bike 1 on next frame (negative for left)
+g$5DC4 DEFB $00
+
+; Number of units to move enemy bike 2 on next frame (negative for left)
+g$5DC5 DEFB $00
+
+; Enemy bike 1 position
+g$5DC6 DEFB $00
+
+; Enemy bike 2 position
+g$5DC7 DEFB $20
+
+; Bit 0 - Enemy bike 1 running, Bit 1 - Enemy bike 2 running
+g$5DC8 DEFB $03
+
+; Control method (0 - keyboard, 1 - kempston)
+g$5DC9 DEFB $00
+
+; X offset for bonus enemy
+g$5DCA DEFB $00
+
+; Various status flags
+;
+;.
+;
+; Bit_1 Set if a bonus enemy is on screen
+; Bit_5 Set if a bonus enemy should appear now
+; Bit_7 Set if the photon bolt has hit something
+g$5DCB DEFB $00
+
+; Time (in frames) before a bonus enemy should be drawn
+g$5DCC DEFB $03
+
+; Address to invalidate / redraw bonus enemy on next frame
+g$5DCD DEFW $6500
+
+; Counter for random number generator
+g$5DCF DEFW $000C
+
+; Current sector (1-8)
+g$5DD1 DEFB $01
+
+; Number of enemy bikes still on screen
+g$5DD2 DEFB $02
+
+; Bit 1 - night patrol
+g$5DD3 DEFB $AA
+
+; Not used
+i$5DD4 DEFB $00
+
+; Distance to next enemy bike frame state (0 - 1E)
+g$5DD5 DEFB $03
+
+; Enemy bike frame to draw (0 - far, 1 - medium, 2 - near, 3 - in range)
+g$5DD6 DEFB $00
+
+; Firing photon bolt (1 - yes, 0 - no)
+g$5DD7 DEFB $00
+
+; x position of photon bolt
+g$5DD8 DEFB $10
+
+; Number of frames of photon bolt left to draw
+g$5DD9 DEFB $07
+
+; Pointer to next screen offset for photon bolt graphic
+g$5DDA DEFW $6521
+
+; Pointer to current photon bolt graphic
+g$5DDC DEFW $7214
+
+; Set bit 0 if the photon bolt hit an enemy
+g$5DDE DEFB $00
+
+; Handlebar position (-1 = left, 0 = centre, 1 = right)
+g$5DDF DEFB $00
+
+; Number of frames before shot bike explodes
+g$5DE0 DEFB $00
+
+; Position of exploding bike
+g$5DE1 DEFB $00
+
+; Pointer to character for next exploding bike frame
+g$5DE2 DEFW $0000
+
+; Pointer to attribute position for exploding bike frame
+g$5DE4 DEFW $0000
+
+; Size of playing area - either $01A0 or $02E0
+g$5DE6 DEFW $01A0
+
+; Bike is moving (0 - no, 1 - yes)
+g$5DE8 DEFB $00
+
+; The current sector in ASCII format
+g$5DE9 DEFB $00
+
+; Not used
+i$5DEA DEFB $00
+
+; Set to 1 to mark as "debug mode" - game code can be saved to tape
+g$5DEB DEFB $00
+
+; Current speed (0 - fast, 2 - slow)
+g$5DEC DEFB $02
+
+; Spare
+i$5DED DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $5DF5 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $5DFD DEFB $00,$00,$00
+
+; Move the trees
+;
+; Used by the routines at #R$65B3, #R$663D, #R$69E3 and #R$6AC2.
+c$5E00 LD A,($5DE8)  ; Is the bike moving?
+ $5E03 DEC A         ; Invert flag
+ $5E04 RET NZ        ; Return if the bike isn't moving
+ $5E05 LD A,($64F3)  ; Get the next bit pattern
+ $5E08 AND A         ; 
+ $5E09 RRCA          ; Shift from "all odds" <-> "all evens"
+ $5E0A LD ($64F3),A  ; 
+ $5E0D JR NC,$5E21   ; If "evens" -> "odds", don't generate trees
+ $5E0F CALL $6491    ; Generate a random number, return the next item in A
+ $5E12 LD H,$5B      ; Get the portion of trees to copy
+ $5E14 AND $7F       ; Position back to the start of the line
+ $5E16 ADD A,$20     ;
+ $5E18 LD L,A        ;
+ $5E19 LD DE,$7CBE   ; Put the new line of trees on the back row
+ $5E1C LD BC,$001E   ;
+ $5E1F LDDR          ;
+*$5E21 LD HL,$7F7F   ; Shift the other lines up one so they appear closer
+ $5E24 LD DE,$7F9F   ;
+ $5E27 LD BC,$02E0   ;
+ $5E2A LDDR          ;
+; As trees get closer to the player, shunt the left out to the side, to emulate the correct perspective view
+ $5E2C XOR A         ; 
+ $5E2D LD B,$0D      ; 13 rows
+ $5E2F LD HL,$7F62   ; Point to next row
+ $5E32 LD DE,$7F61   ;
+ $5E35 LD A,$0E      ; 14 columns
+*$5E37 PUSH BC       ;
+ $5E38 PUSH DE       ;
+ $5E39 LD B,$00      ; 
+ $5E3B LD C,A        ;
+ $5E3C LDIR          ;
+ $5E3E DEC L         ;
+ $5E3F LD (HL),$00   ;
+ $5E41 POP HL        ;
+ $5E42 LD DE,$FFE0   ;
+ $5E45 ADD HL,DE     ;
+ $5E46 PUSH HL       ;
+ $5E47 INC HL        ;
+ $5E48 POP DE        ;
+ $5E49 POP BC        ;
+ $5E4A BIT 1,B       ;
+ $5E4C JR Z,$5E51    ;
+ $5E4E DEC A         ;
+ $5E4F JR Z,$5E53    ;
+*$5E51 DJNZ $5E37    ;
+*$5E53 LD B,$0D      ;
+ $5E55 LD HL,$7F7D   ;
+ $5E58 LD DE,$7F7E   ;
+ $5E5B LD A,$0D      ;
+*$5E5D PUSH BC       ;
+ $5E5E PUSH DE       ;
+ $5E5F LD B,$00      ;
+ $5E61 LD C,A        ;
+ $5E62 LDDR          ;
+ $5E64 INC L         ;
+ $5E65 LD (HL),$00   ;
+ $5E67 POP HL        ;
+ $5E68 LD DE,$FFE0   ;
+ $5E6B ADD HL,DE     ;
+ $5E6C PUSH HL       ;
+ $5E6D DEC HL        ;
+ $5E6E POP DE        ;
+ $5E6F POP BC        ;
+ $5E70 BIT 1,B       ;
+ $5E72 JR Z,$5E77    ;
+ $5E74 DEC A         ;
+ $5E75 JR Z,$5E79    ;
+*$5E77 DJNZ $5E5D    ;
+; As trees get closer to the player, shunt the right out to the side, to emulate the correct perspective view
+*$5E79 XOR A         ;
+ $5E7A LD B,$06      ;
+ $5E7C LD HL,$7CA0   ;
+ $5E7F LD DE,$7CA1   ;
+ $5E82 LD (HL),A     ;
+ $5E83 LD BC,$001F   ;
+ $5E86 LDIR          ;
+ $5E88 LD HL,$7F42   ;
+ $5E8B LD DE,$7F41   ;
+ $5E8E LD BC,$000E   ;
+ $5E91 LDIR          ;
+ $5E93 LD (DE),A     ;
+ $5E94 LD DE,$7F61   ;
+ $5E97 LD HL,$7F62   ;
+ $5E9A LD BC,$000E   ;
+ $5E9D LDIR          ;
+ $5E9F LD (DE),A     ;
+ $5EA0 LD HL,$7F7D   ;
+ $5EA3 LD DE,$7F7E   ;
+ $5EA6 LD BC,$000D   ;
+ $5EA9 LDDR          ;
+ $5EAB LD (DE),A     ; Don't put two trees next to each other
+ $5EAC LD HL,$7F40   ;
+ $5EAF LD BC,$0040   ;
+*$5EB2 LD A,$40      ;
+ $5EB4 CPIR          ;
+ $5EB6 DEC HL        ;
+ $5EB7 LD (HL),$00   ;
+ $5EB9 INC HL        ;
+ $5EBA LD A,B        ;
+ $5EBB OR C          ;
+ $5EBC JR NZ,$5EB2   ;
+ $5EBE LD HL,$7F40   ;
+ $5EC1 LD BC,$0040   ;
+*$5EC4 LD A,$20      ;
+ $5EC6 CPIR          ;
+ $5EC8 LD (HL),$40   ;
+ $5ECA LD A,B        ;
+ $5ECB OR C          ;
+ $5ECC JR NZ,$5EC4   ;
+ $5ECE XOR A         ;
+ $5ECF LD B,$04      ;
+*$5ED1 PUSH BC       ;
+ $5ED2 LD HL,$7F81   ;
+ $5ED5 LD DE,$7F80   ;
+ $5ED8 LD BC,$000F   ;
+ $5EDB LDIR          ;
+ $5EDD LD (DE),A     ;
+ $5EDE POP BC        ;
+ $5EDF DJNZ $5ED1    ;
+; Expand out the closest trees to take up more area, as perspective view would anticipate
+ $5EE1 LD BC,$0020   ; 
+ $5EE4 LD A,$20      ; 
+ $5EE6 LD HL,$7F80   ;
+*$5EE9 CPIR          ;
+ $5EEB LD (HL),$20   ;
+ $5EED INC HL        ;
+ $5EEE LD (HL),$40   ;
+ $5EF0 INC HL        ;
+ $5EF1 LD (HL),$40   ;
+ $5EF3 LD DE,$7F9E   ;
+ $5EF6 EX DE,HL      ;
+ $5EF7 AND A         ;
+ $5EF8 SBC HL,DE     ;
+ $5EFA EX DE,HL      ;
+ $5EFB JR NC,$5EE9   ;
+ $5EFD RET           ;
+
+; Check for movement controls
+;
+; Used by the routines at #R$663D, #R$69E3 and #R$6AC2.
+c$5EFE LD HL,$5E25   ; Change this to modify what trees are drawn
+ $5F01 LD IX,$66DF   ;
+ $5F05 LD A,($5DC9)  ; Are we using joystick?
+ $5F08 BIT 0,A       ;
+ $5F0A JR Z,$5F18    ; Jump forward if using keyboard
+ $5F0C IN A,($1F)    ; Read Kempston port
+ $5F0E BIT 0,A       ; Check for RIGHT
+ $5F10 JR NZ,$5F28   ; Jump if moving right
+ $5F12 BIT 1,A       ; Check for LEFT
+ $5F14 JR NZ,$5F47   ; Jump if moving left
+ $5F16 JR $5F66      ; No movement - straighten up
+*$5F18 LD A,$F7      ; Read 1 - 5
+ $5F1A IN A,($FE)    ; 
+ $5F1C BIT 0,A       ; Was 1 pressed?
+ $5F1E JR Z,$5F47    ; Jump if moving left
+ $5F20 LD A,$EF      ; Read 0 - 6
+ $5F22 IN A,($FE)    ;
+ $5F24 BIT 0,A       ; Was 0 pressed?
+ $5F26 JR NZ,$5F66   ; Jump if not - straighten up
+
+; Move right
+;
+; Used by the routine at #R$5EFE.
+c$5F28 LD A,($5DDF)    ; Are we moving right?
+ $5F2B CP $01          ;
+ $5F2D RET Z           ; No change
+ $5F2E LD A,$9E        ; Change where to copy trees
+ $5F30 LD (HL),A       ;
+ $5F31 LD (IX+$00),$7E ;
+ $5F35 LD HL,$5E5C     ;
+ $5F38 LD (HL),$05     ;
+ $5F3A LD A,$01        ;
+ $5F3C LD ($5DDF),A    ;
+ $5F3F LD A,$1E        ;
+ $5F41 LD ($5E8F),A    ;
+ $5F44 JP $66DB        ;
+
+; Move left
+;
+; Used by the routine at #R$5EFE.
+c$5F47 LD A,($5DDF)    ; Are we moving left?
+ $5F4A CP $FF          ;
+ $5F4C RET Z           ; No change
+ $5F4D LD A,$A0        ; Change where to copy trees
+ $5F4F LD (HL),A       ;
+ $5F50 LD (IX+$00),$FC ;
+ $5F54 LD HL,$5E36     ;
+ $5F57 LD (HL),$08     ;
+ $5F59 LD A,$FF        ;
+ $5F5B LD ($5DDF),A    ;
+ $5F5E LD A,$02        ;
+ $5F60 LD ($5E8F),A    ;
+ $5F63 JP $66DB        ;
+
+; Straighten up
+;
+; Used by the routine at #R$5EFE.
+c$5F66 LD A,($5DDF)    ; Are we moving straight?
+ $5F69 CP $00          ;
+ $5F6B RET Z           ; No change
+ $5F6C LD A,$9F        ;
+ $5F6E LD (HL),A       ;
+ $5F6F LD (IX+$00),$00 ;
+ $5F73 LD HL,$5E36     ;
+ $5F76 LD (HL),$0E     ;
+ $5F78 LD HL,$5E5C     ;
+ $5F7B LD (HL),$0D     ;
+ $5F7D LD A,$0E        ;
+ $5F7F LD ($5E8F),A    ;
+ $5F82 XOR A           ;
+ $5F83 LD ($5DDF),A    ;
+ $5F86 JP $66DB        ;
+
+; Print objects on the playing field
+;
+; Used by the routines at #R$62CB, #R$65B3, #R$663D, #R$6711, #R$69E3, #R$6AC2
+; and #R$6B71.
+c$5F89 LD IX,$6D73    ; Point IX to the tree sprite table at #R$6D73
+ $5F8D LD DE,$FFE0    ; Move forward $20 bytes with each iteration
+ $5F90 LD HL,$7F81    ; Point HL to front row of trees
+ $5F93 LD BC,$1E01    ; 
+*$5F96 PUSH IX        ;
+ $5F98 PUSH DE        ;
+ $5F99 PUSH HL        ;
+ $5F9A PUSH BC        ;
+ $5F9B PUSH BC        ;
+ $5F9C LD C,$01       ;
+ $5F9E LD A,($5DEC)   ; Get current speed
+ $5FA1 LD B,A         ; If we're not running on full speed (A=0),
+*$5FA2 DEC BC         ; put a time delay in
+ $5FA3 LD A,B         ; so updates only happen after a pause
+ $5FA4 OR C           ;
+ $5FA5 JR NZ,$5FA2    ; Loop until delay finished
+ $5FA7 POP BC         ;
+ $5FA8 LD B,$18       ;
+*$5FAA LD A,(HL)      ; Have we got any tree here?
+ $5FAB CP $20         ;
+ $5FAD JR NC,$5FB8    ; Jump forward if we have
+ $5FAF ADD HL,DE      ; Scan next piece of this line
+ $5FB0 INC IX         ;
+ $5FB2 INC IX         ;
+ $5FB4 INC IX         ;
+ $5FB6 DJNZ $5FAA     ;
+*$5FB8 CP $40         ; Have we got a large tree here?
+ $5FBA JR Z,$5FE0     ; Jump forward if we have
+ $5FBC LD A,(IX+$00)  ; Is this a large tree?
+ $5FBF CP $00         ; 
+ $5FC1 JR Z,$5FD8     ; Jump forward if it is
+ $5FC3 LD L,(IX+$01)  ; Copy the next screen point into the working store
+ $5FC6 LD H,(IX+$02)  ;
+ $5FC9 PUSH BC        ;
+ $5FCA LD BC,$0036    ;
+ $5FCD LD DE,$7C27    ; Put the graphic in the storage buffer for display
+ $5FD0 LDIR           ;
+ $5FD2 POP BC         ;
+ $5FD3 LD DE,$7BFA    ;
+ $5FD6 JR $5FE6       ;
+*$5FD8 LD E,(IX+$01)  ; 
+ $5FDB LD D,(IX+$02)  ;
+ $5FDE JR $5FE6       ;
+*$5FE0 LD E,(IX-$08)  ;
+ $5FE3 LD D,(IX-$07)  ;
+*$5FE6 LD B,$12       ; Large trees are 18 characters deep
+ $5FE8 LD IX,$64F4    ; #R$64F4 - screen offset table
+ $5FEC LD A,C         ; Work out where this should be put on screen
+ $5FED CP $0D         ;
+ $5FEF JR C,$5FF7     ;
+ $5FF1 CP $14         ;
+ $5FF3 JR NC,$5FF7    ;
+ $5FF5 LD B,$10       ; Small trees are 16 characters deep 
+;Copy the tree onto screen
+*$5FF7 PUSH BC        ; Store for later
+ $5FF8 LD A,C         ; Get the offset
+ $5FF9 ADD A,(IX+$00) ; Add it to the attribute position
+ $5FFC LD L,A         ; and store it in HL
+ $5FFD LD H,(IX+$02)  ; Get the other part of the screen position
+ $6000 LD A,(DE)      ; Get the next byte from the tree store
+ $6001 LD (HL),A      ; Put it on screen
+ $6002 INC DE         ;
+ $6003 LD H,(IX+$01)  ; Get the screen offset
+ $6006 LD B,$08       ; 8 lines
+*$6008 LD A,(DE)      ; Put it on screen
+ $6009 LD (HL),A      ;
+ $600A INC H          ; Move to the next line
+ $600B INC DE         ; Onto the next section of tree
+ $600C DJNZ $6008     ;
+ $600E EX AF,AF'      ;
+ $600F XOR $10        ; Toggle the speaker, so a sound effect is played
+ $6011 OUT ($FE),A    ;
+ $6013 EX AF,AF'      ;
+ $6014 POP BC         ;
+ $6015 INC IX         ;
+ $6017 INC IX         ;
+ $6019 INC IX         ;
+ $601B DJNZ $5FF7     ;
+ $601D POP BC         ;
+;Display enemies
+ $601E PUSH BC        ;
+ $601F LD A,($5DC6)   ; Is enemy bike 1 here?
+ $6022 CP C           ;
+ $6023 JR NZ,$6033    ; Jump forward if not
+ $6025 LD A,($5DC4)   ;
+ $6028 LD ($5DC1),A   ;
+ $602B LD A,$06       ;
+ $602D LD ($5DC0),A   ;
+ $6030 CALL $6150     ; Draw an enemy bike
+*$6033 POP BC         ;
+ $6034 PUSH BC        ;
+ $6035 LD A,($5DC7)   ; Is enemy bike 2 here?
+ $6038 CP C           ;
+ $6039 JR NZ,$6049    ; Jump forward if not
+ $603B LD A,($5DC5)   ;
+ $603E LD ($5DC1),A   ;
+ $6041 LD A,$01       ;
+ $6043 LD ($5DC0),A   ;
+ $6046 CALL $6150     ;
+*$6049 LD A,($5DCB)   ; Is there a tank here?
+ $604C BIT 1,A        ;
+ $604E CALL NZ,$6453  ; Draw it if there is
+ $6051 POP BC         ;
+ $6052 PUSH BC        ;
+ $6053 LD A,($5DCB)   ; Is there a plane here?
+ $6056 BIT 0,A        ;
+ $6058 CALL NZ,$63FC  ; Draw it if there is
+ $605B POP BC         ;
+ $605C PUSH BC        ;
+ $605D LD A,($5DD7)   ; Are we firing a photon bolt?
+ $6060 BIT 0,A        ;
+ $6062 CALL NZ,$6802  ; Draw it if we are
+ $6065 POP BC         ;
+ $6066 POP HL         ;
+ $6067 POP DE         ;
+ $6068 POP IX         ;
+ $606A INC HL         ;
+ $606B INC C          ;
+ $606C XOR A          ;
+ $606D DEC B          ;
+ $606E OR B           ;
+ $606F JP NZ,$5F96    ; Back round to the next screen position
+ $6072 RET            ;
+
+; Unused
+i$6073 DEFB $60
+
+; Print the next sector
+;
+; Used by the routine at #R$60C1.
+c$6074 LD A,($5DD1)  ; Get the current sector
+ $6077 CP $09        ; Are we past sector 8?
+ $6079 JR NZ,$6084   ; Move on if not
+ $607B CALL $6C17    ; { Give the player a big bonus
+ $607E LD A,$01      ; and go back to sector 1 }
+ $6080 LD ($5DD1),A  ;
+ $6083 RET           ;
+*$6084 LD DE,$60A3   ;
+ $6087 LD HL,$48CB   ;
+ $608A LD B,$07      ;
+ $608C CALL $6949    ; Print "SECTOR" in the middle of the screen
+ $608F LD A,($5DD1)  ; { Get the current sector,
+ $6092 ADD A,$30     ; convert from a number to ASCII
+ $6094 LD ($5DE9),A  ; and put it in the message buffer }
+ $6097 LD DE,$5DE9   ;
+ $609A LD B,$01      ;
+ $609C LD HL,$48D2   ;
+ $609F CALL $6949    ; Print the sector number
+ $60A2 RET           ;
+
+; "SECTOR "
+t$60A3 DEFM "SECTOR "
+
+; Play an ascending sound
+;
+; Used by the routines at #R$60C1, #R$6113, #R$657F and #R$6B96.
+c$60AA EX AF,AF'     ; Swap out A
+ $60AB LD D,$64      ; Length of sound 
+ $60AD LD E,$14      ; Initial length
+*$60AF LD H,$0A      ; Initial frequency
+*$60B1 XOR $10       ; Toggle the speaker on / off
+ $60B3 OUT ($FE),A   ;
+ $60B5 LD B,E        ; Hold in that position for E frames
+*$60B6 DJNZ $60B6    ;
+ $60B8 DEC H         ; Increase frequency and repeat 
+ $60B9 JR NZ,$60B1   ;
+ $60BB DEC E         ; Increase frequency, decrease length
+ $60BC DEC D         ;
+ $60BD JR NZ,$60AF   ;
+ $60BF EX AF,AF'     ; Swap back in A
+ $60C0 RET           ;
+
+; Switch from NIGHT to DAY
+;
+; Used by the routine at #R$62CB.
+c$60C1 LD B,$05      ; Swap colour five times
+ $60C3 LD C,$01      ; Start off blue
+ $60C5 LD HL,$5DD1   ; Get the current sector
+ $60C8 INC (HL)      ; Increment to the next one
+ $60C9 LD HL,$5841   ; Point to the attribute buffer
+*$60CC PUSH BC       ;
+ $60CD PUSH HL       ;
+ $60CE LD A,C        ; Get the next colour?
+ $60CF CP $04        ; Is it cyan?
+ $60D1 JR Z,$60F2    ; Jump forward if it is
+ $60D3 SLA C         ; Shift the colour into PAPER bit position
+ $60D5 SLA C         ;
+ $60D7 SLA C         ;
+ $60D9 LD B,$0A      ; 10 rows 
+*$60DB PUSH BC       ;
+ $60DC PUSH HL       ;
+ $60DD LD B,$1E      ; 30 columns
+*$60DF LD A,(HL)     ; Get next attribute
+ $60E0 AND $C7       ; { Turn off PAPER bits
+ $60E2 OR C          ; and swap them for current colour }
+ $60E3 LD (HL),A     ; Put the attribute back
+ $60E4 INC HL        ; Move to next column
+ $60E5 DJNZ $60DF    ;
+ $60E7 POP HL        ;
+ $60E8 LD DE,$0020   ; Move to next row
+ $60EB ADD HL,DE     ;
+ $60EC POP BC        ;
+ $60ED DJNZ $60DB    ;
+ $60EF CALL $60AA    ; Play an ascending sound
+*$60F2 POP HL        ;
+ $60F3 POP BC        ;
+ $60F4 INC C         ;
+ $60F5 DJNZ $60CC    ; Next colour
+ $60F7 LD C,$28      ;
+ $60F9 CALL $62F7    ; Flip background colour on huge trees
+ $60FC LD A,($5DD1)  ; Get current sector
+ $60FF CP $01        ; Is it 1?
+ $6101 RET Z         ; Return if so
+ $6102 CALL $6074    ; Print the sector
+ $6105 LD DE,$6B38   ; #R$6B38 = "DAY PATROL"
+; This entry point is used by the routine at #R$6113.
+*$6108 LD HL,$488A   ;
+ $610B LD B,$0C      ;
+ $610D CALL $6949    ; Display message
+ $6110 JP $60AA      ;
+
+; Switch from DAY to NIGHT
+;
+; Used by the routine at #R$62CB.
+c$6113 LD B,$05      ; Five colours
+ $6115 LD C,$04      ; Start off cyan
+ $6117 LD HL,$5841   ; Point to the attribute buffer
+*$611A PUSH BC       ;
+ $611B PUSH HL       ;
+ $611C LD A,C        ; Get the next colour?
+ $611D CP $04        ; Is it black?
+ $611F JR Z,$6140    ; Jump forward if so
+ $6121 SLA C         ; Shift the colour into PAPER bit position
+ $6123 SLA C         ;
+ $6125 SLA C         ;
+ $6127 LD B,$0A      ; 10 rows
+*$6129 PUSH BC       ;
+ $612A PUSH HL       ;
+ $612B LD B,$1E      ; 30 columns
+*$612D LD A,(HL)     ; Get the next attribute
+ $612E AND $C7       ; { Turn off PAPER bits
+ $6130 OR C          ; and swap them for current colour }
+ $6131 LD (HL),A     ; Put the attribute back
+ $6132 INC HL        ; Move to next column
+ $6133 DJNZ $612D    ;
+ $6135 POP HL        ;
+ $6136 LD DE,$0020   ; Move to next row
+ $6139 ADD HL,DE     ;
+ $613A POP BC        ;
+ $613B DJNZ $6129    ;
+ $613D CALL $60AA    ; Play an ascending sound
+*$6140 POP HL        ;
+ $6141 POP BC        ;
+ $6142 DEC C         ;
+ $6143 DJNZ $611A    ; Next colour
+ $6145 LD C,$00      ;
+ $6147 CALL $62F7    ; Flip background colour on huge trees
+ $614A LD DE,$6B44   ; #R$6B44 = "NIGHT PATROL"
+ $614D JP $6108      ;
+
+; Draw the enemy bikes
+;
+; Used by the routine at #R$5F89.
+c$6150 LD A,$60      ;
+ $6152 LD H,$48      ;
+ $6154 ADD A,C       ;
+ $6155 LD L,A        ;
+ $6156 LD A,($5DD6)  ; Get the current distance to the bikes
+ $6159 LD DE,$7184   ; Point DE at the enemy bike graphics UDG table at #R$7184
+ $615C CP $02        ; Are the bikes far away?
+ $615E JP M,$616A    ; Jump forward if so
+ $6161 CP $04        ; Are the bikes visible at all?
+ $6163 LD DE,$71B4   ; #R$71B4 - large bike UDGs
+ $6166 JP M,$619F    ; Jump if they are
+ $6169 RET           ; Bail out, no bikes to draw
+; Draw small bikes
+*$616A EX DE,HL      ;
+ $616B LD A,($5DC1)  ; Get the bike position and work out the screen offset
+ $616E INC A         ;
+ $616F LD B,A        ;
+ $6170 LD A,($5DD6)  ; Get the bike's image type
+ $6173 LD C,A        ; Convert this to a graphic address
+ $6174 ADD A,A       ;
+ $6175 ADD A,C       ;
+ $6176 ADD A,B       ;
+ $6177 ADD A,A       ;
+ $6178 ADD A,A       ;
+ $6179 ADD A,A       ;
+ $617A LD B,$00      ;
+ $617C LD C,A        ;
+ $617D ADD HL,BC     ;
+; Copy the bike onto screen
+ $617E EX DE,HL      ;
+ $617F LD B,$08      ;
+*$6181 LD A,(DE)     ;
+ $6182 OR (HL)       ;
+ $6183 LD (HL),A     ;
+ $6184 INC H         ;
+ $6185 INC DE        ;
+ $6186 DJNZ $6181    ;
+ $6188 LD H,$48      ;
+ $618A LD A,$E0      ;
+ $618C ADD A,L       ;
+ $618D LD L,A        ;
+ $618E LD A,$10      ;
+ $6190 CP (HL)       ;
+ $6191 JR C,$619E    ;
+; Copy the attribute
+ $6193 LD A,$20      ;
+ $6195 ADD A,L       ;
+ $6196 LD L,A        ;
+ $6197 LD H,$59      ;
+ $6199 LD A,($5DC0)  ;
+ $619C OR (HL)       ;
+ $619D LD (HL),A     ;
+*$619E RET           ;
+; Draw large bikes
+*$619F EX DE,HL      ; 
+ $61A0 LD A,($5DC1)  ; Get the bike's position and work out its screen address
+ $61A3 INC A         ;
+ $61A4 LD B,A        ;
+ $61A5 LD A,($5DD6)  ; Get the bike's image type
+ $61A8 ADD A,$FE     ; Convert this to a graphic address
+ $61AA LD C,A        ;
+ $61AB ADD A,A       ;
+ $61AC ADD A,C       ;
+ $61AD ADD A,B       ;
+ $61AE PUSH HL       ;
+ $61AF LD H,$00      ;
+ $61B1 LD L,A        ;
+ $61B2 ADD HL,HL     ;
+ $61B3 ADD HL,HL     ;
+ $61B4 ADD HL,HL     ;
+ $61B5 ADD HL,HL     ;
+ $61B6 POP BC        ;
+ $61B7 ADD HL,BC     ;
+; Copy the bike onto screen
+ $61B8 EX DE,HL      ;
+ $61B9 LD B,$08      ;
+*$61BB LD A,(DE)     ;
+ $61BC OR (HL)       ;
+ $61BD LD (HL),A     ;
+ $61BE INC H         ;
+ $61BF INC DE        ;
+ $61C0 DJNZ $61BB    ;
+ $61C2 LD H,$48      ;
+ $61C4 LD A,$40      ;
+ $61C6 ADD A,L       ;
+ $61C7 LD L,A        ;
+ $61C8 INC H         ;
+ $61C9 LD A,(HL)     ;
+ $61CA CP $00        ;
+ $61CC JR NZ,$61F2   ;
+; Copy the attribute
+ $61CE LD A,L        ;
+ $61CF SUB $40       ;
+ $61D1 LD L,A        ;
+ $61D2 LD H,$59      ;
+ $61D4 LD A,($5DC0)  ;
+ $61D7 LD C,A        ;
+ $61D8 LD A,(HL)     ;
+ $61D9 AND $F8       ;
+ $61DB OR C          ;
+ $61DC LD (HL),A     ;
+; Copy the second row
+ $61DD LD H,$48      ;
+ $61DF LD A,L        ;
+ $61E0 ADD A,$20     ;
+ $61E2 LD L,A        ;
+ $61E3 LD B,$08      ;
+*$61E5 LD A,(DE)     ;
+ $61E6 LD (HL),A     ;
+ $61E7 INC H         ;
+ $61E8 INC DE        ;
+ $61E9 DJNZ $61E5    ;
+; Do the attribute
+ $61EB LD H,$59      ;
+ $61ED LD A,(HL)     ;
+ $61EE AND $F8       ;
+ $61F0 OR C          ;
+ $61F1 LD (HL),A     ;
+*$61F2 RET           ;
+
+; Recalculate where the enemy bikes should be
+;
+; Used by the routine at #R$663D.
+c$61F3 LD A,($5DC8)  ; See what enemy bikes are still in play
+ $61F6 BIT 0,A       ; Is enemy bike 1 running?
+ $61F8 JR NZ,$61FF   ; Jump forward if it is
+*$61FA BIT 1,A       ; Is enemy bike 2 running?
+ $61FC JR NZ,$6221   ; Jump forward if it is
+ $61FE RET           ; No bikes, nothing to do
+*$61FF LD HL,$5DC8   ; Set bit 3 to denote more work to do
+ $6202 SET 3,(HL)    ;
+ $6204 LD HL,$5DC6   ; Modify the checking code to work with bike 1
+ $6207 LD ($6244),HL ;
+ $620A LD ($6262),HL ;
+ $620D LD HL,$5DC4   ;
+ $6210 LD ($6253),HL ;
+ $6213 LD ($6282),HL ;
+ $6216 LD HL,$5DC2   ;
+ $6219 LD ($6265),HL ;
+ $621C LD ($6278),HL ;
+ $621F JR $6243      ;
+*$6221 LD HL,$5DC8   ; Flag as no more bike checking to do after this
+ $6224 RES 3,(HL)    ;
+ $6226 LD HL,$5DC7   ; Modify the checking code to work with bike 2
+ $6229 LD ($6244),HL ;
+ $622C LD ($6262),HL ;
+ $622F LD HL,$5DC5   ;
+ $6232 LD ($6253),HL ;
+ $6235 LD ($6282),HL ;
+ $6238 LD HL,$5DC3   ;
+ $623B LD ($6265),HL ;
+ $623E LD ($6278),HL ;
+ $6241 JR $6243      ;
+*$6243 LD A,($5DC6)  ; Get the bike's position
+ $6246 CP $C8        ; Is it below -38?
+ $6248 JR C,$624C    ; Jump if not
+ $624A LD A,$00      ; ... otherwise reset to 0
+*$624C CP $21        ; Is it above 21?
+ $624E JR C,$6252    ; Jump if not
+ $6250 LD A,$20      ; ... otherwise reset to 20
+*$6252 LD HL,$5DC4   ; { Get the position to change the bike by
+ $6255 ADD A,(HL)    ; and adjust it }
+ $6256 LD HL,$5DE8   ; Is the bike moving?
+ $6259 BIT 0,(HL)    ;
+ $625B JR Z,$6261    ; Jump forward if it isn't
+ $625D LD HL,$5DDF   ; Adjust the enemy bike position to suit our next position
+ $6260 SUB (HL)      ; if we are turning left or right
+*$6261 LD ($5DC6),A  ; Store new bike position
+ $6264 LD HL,$5DC2   ; Get the number of frames before bike should turn
+ $6267 DEC (HL)      ; Decrement it
+ $6268 XOR A         ; Is it 0?
+ $6269 CP (HL)       ;
+ $626A JR NZ,$6284   ; Jump forward if it isn't
+ $626C CALL $6491    ; Get a random number
+ $626F AND $1C       ; Take bits 2-4 and store it in B plus 1
+ $6271 SRL A         ;
+ $6273 SRL A         ;
+ $6275 LD B,A        ;
+ $6276 INC B         ;
+ $6277 LD HL,$5DC2   ; Repopulate the frame counter
+ $627A LD (HL),B     ;
+ $627B AND $03       ; If all bits are set, don't change direction
+ $627D CP $03        ;
+ $627F RET Z         ;
+ $6280 DEC A         ; Adjust the bike's position
+ $6281 LD ($5DC4),A  ;
+*$6284 LD A,($5DC8)  ; Is there another bike to look at?
+ $6287 BIT 3,A       ;
+ $6289 JP NZ,$61FA   ; Go back and adjust that if so
+ $628C RET           ; Otherwise all done
+
+; Print "KEYBOARD"
+;
+; Used by the routine at #R$65B3.
+c$628D LD DE,$6B50   ; "KEYBOARD"
+ $6290 LD B,$0C      ;
+ $6292 LD HL,$488A   ;
+ $6295 CALL $6949    ;
+
+; Print "KEMPSTON"
+c$6298 LD DE,$6B5C   ; "KEMPSTON"
+ $629B LD HL,$48CA   ;
+ $629E LD B,$0C      ;
+ $62A0 CALL $6949    ;
+
+; Print the copyright notice
+c$62A3 LD DE,$6C56   ; "(c) etc"
+ $62A6 LD HL,$5006   ;
+ $62A9 LD B,$16      ;
+ $62AB CALL $6949    ;
+
+; See if 1 (keyboard) or 2 (Kempston) was pressed, and start a game if so
+c$62AE LD HL,$5DC9   ;
+*$62B1 LD A,$F7      ; Scan 1 - 5 
+ $62B3 IN A,($FE)    ;
+ $62B5 BIT 0,A       ; Was 1 pressed?
+ $62B7 JR Z,$62BF    ; Jump if so
+ $62B9 BIT 1,A       ; Was 2 pressed?
+ $62BB JR Z,$62C2    ; Jump if so
+ $62BD JR $62B1      ; No appropriate key pressed, loop back round
+*$62BF LD (HL),$00   ; Select KEYBOARD
+ $62C1 RET           ;
+*$62C2 LD (HL),$01   ; Selected KEMPSTON
+ $62C4 IN A,($1F)    ; Check a joystick is actually available?
+ $62C6 CP $20        ;
+ $62C8 JR NC,$62BF   ; Otherwise select KEYBOARD instead
+ $62CA RET           ;
+
+; Switch to a new sector
+;
+; Used by the routines at #R$65B3 and #R$69E3.
+c$62CB LD A,$02      ; Reset back to two enemy bikes
+ $62CD LD ($5DD2),A  ;
+ $62D0 LD HL,$5DCB   ; Reset flag for bonus enemy appearing
+ $62D3 RES 5,(HL)    ;
+ $62D5 LD A,($5DD3)  ; Flip from day to night
+ $62D8 RRCA          ;
+ $62D9 LD ($5DD3),A  ; Get the day / night flag
+ $62DC BIT 0,A       ; Is this night patrol?
+ $62DE JP NZ,$6113   ; Jump if it is
+*$62E1 LD A,($5DCA)  ; It's day patrol, is there a bonus enemy on screen?
+ $62E4 CP $00        ;
+ $62E6 JR Z,$62F0    ; Jump forward if there isn't
+ $62E8 CALL $633A    ; { Scroll the enemy forward
+ $62EB CALL $5F89    ; and redraw it,
+ $62EE JR $62E1      ; and keep going until it's off screen }
+*$62F0 XOR A         ; Set no bonus enemies on screen
+ $62F1 LD ($5DCA),A  ;
+ $62F4 JP $60C1      ; Move to day patrol
+
+; Switch background colour on huge trees between DAY and NIGHT,
+; and initialize the bikes
+;
+; Used by the routines at #R$60C1 and #R$6113.
+;
+; C Background colour
+c$62F7 LD HL,$7246   ; Point to huge tree graphics
+ $62FA LD DE,$0009   ; 1 attribute + 8 pixel lines
+ $62FD LD B,$02      ; 2 sets of huge trees
+*$62FF PUSH BC       ;
+ $6300 LD B,$93      ;
+*$6302 LD A,(HL)     ; Get the graphic
+ $6303 AND $38       ; Select PAPER bits
+ $6305 CP $20        ; Is it green?
+ $6307 JR Z,$630E    ; Skip if so
+ $6309 LD A,(HL)     ; 
+ $630A AND $C7       ; Clear PAPER bits
+ $630C OR C          ; Set to the background colour
+ $630D LD (HL),A     ;
+*$630E ADD HL,DE     ; Next row
+ $630F DJNZ $6302    ;
+ $6311 POP BC        ; Next tree
+ $6312 DJNZ $62FF    ;
+ $6314 LD A,$03      ; Set both bikes running
+ $6316 LD ($5DC8),A  ;
+ $6319 RET           ;
+
+; Plane graphic
+b$631A DEFB $01,$3F,$00,$41,$FF,$9F,$01,$00 ; { #UDG$631A,47#UDG$6322,47
+ $6322 DEFB $80,$FE,$80,$C0,$F8,$FE,$FF,$FE ; }
+
+; Plane / tank exploded
+b$632A DEFB $0F,$3A,$75,$EA,$75,$3A,$1D,$0F ; {#UDG$632A,47#UDG$6332,47
+ $6332 DEFB $F0,$5C,$AE,$57,$AE,$5C,$B8,$F0 ; }
+
+; Move a plane or tank across the screen if appropriate
+;
+; Used by the routines at #R$62CB and #R$663D.
+c$633A LD A,($5DCB)  ; Is the enemy being blown up?
+ $633D BIT 7,A       ;
+ $633F JR NZ,$6359   ; Skip setup if so
+ $6341 BIT 5,A       ; Should an enemy appear now?
+ $6343 RET NZ        ; Return if not
+ $6344 BIT 0,A       ; Is this a tank?
+ $6346 JR NZ,$637C   ; No, it's a plane, move forward
+ $6348 LD A,($5DCC)  ; { Get frames until a bonus enemy should appear
+ $634B DEC A         ; and decrement it }
+ $634C JR NZ,$6355   ; Move forward if it's not time yet
+ $634E LD HL,$5DCB   ;
+ $6351 SET 0,(HL)    ; Set that a bonus enemy is on screen
+ $6353 LD A,$32      ; Reset number of frames before bonus enemy can appear again
+*$6355 LD ($5DCC),A  ;
+ $6358 RET           ;
+*$6359 LD A,($5DCC)  ; Get number of frames before bonus enemy should appear
+ $635C LD HL,$6443   ;
+ $635F LD (HL),A     ;
+ $6360 DEC A         ;
+ $6361 LD ($5DCC),A  ;
+ $6364 RET NZ        ;
+ $6365 LD (HL),$07   ;
+ $6367 LD A,$32      ;
+ $6369 LD ($5DCC),A  ;
+ $636C LD A,$20      ;
+ $636E LD ($5DCB),A  ;
+
+; Set up the play stats
+;
+; Used by the routine at #R$65B3.
+c$6371 XOR A         ; No bonus enemy
+ $6372 LD ($5DCA),A  ;
+ $6375 LD HL,$6500   ; Next address to invalidate
+ $6378 LD ($5DCD),HL ;
+ $637B RET           ;
+
+; Move the plane across screen
+;
+; Used by the routine at #R$633A.
+c$637C LD A,($5DCA)  ; Get the enemy offset
+ $637F LD HL,$7CB0   ;
+ $6382 LD (HL),$00   ;
+ $6384 INC L         ;
+ $6385 LD (HL),$00   ;
+ $6387 CP $08        ; Is it above 8?
+ $6389 JR C,$63CD    ; Jump if so
+ $638B CP $14        ; Is it below 14?
+ $638D LD IX,($5DCD) ; Get the current screen offset
+ $6391 JR NC,$63B2   ; Jump if below 14
+ $6393 INC IX        ; Move down a line
+ $6395 INC IX        ;
+ $6397 INC IX        ;
+ $6399 LD H,(IX+$01) ; Get the offset to draw at
+ $639C LD L,(IX+$00) ;
+ $639F EX DE,HL      ;
+ $63A0 LD HL,$4860   ; Make the offset the distance up from the horizon
+ $63A3 AND A         ;
+ $63A4 SBC HL,DE     ;
+ $63A6 JR NC,$63AC   ;
+ $63A8 LD IX,$650F   ;
+*$63AC LD ($5DCD),IX ; Set the new position
+ $63B0 JR $63CD      ;
+*$63B2 DEC IX        ; Move up a line
+ $63B4 DEC IX        ;
+ $63B6 DEC IX        ;
+ $63B8 LD L,(IX+$00) ; Get the offset to draw at
+ $63BB LD H,(IX+$01) ;
+ $63BE EX DE,HL      ;
+ $63BF LD HL,$40C0   ; Make the offset the distance from the horizon
+ $63C2 AND A         ;
+ $63C3 SBC HL,DE     ;
+ $63C5 JR C,$63AC    ;
+ $63C7 LD IX,$6500   ; 
+ $63CB JR $63AC      ; Jump back to set new position, then continue
+*$63CD LD A,($5DCA)  ; Get enemy offset
+ $63D0 LD HL,$5DE8   ; Is the bike moving?
+ $63D3 BIT 0,(HL)    ;
+ $63D5 JR Z,$63DB    ;
+ $63D7 LD HL,$5DDF   ; Adjust enemy position to new bike position if we are turning
+ $63DA SUB (HL)      ; 
+*$63DB INC A         ;
+ $63DC CP $00        ;
+ $63DE JR Z,$63E4    ;
+ $63E0 CP $1E        ;
+ $63E2 JR C,$63E8    ;
+*$63E4 XOR A         ; 
+ $63E5 LD ($5DCB),A  ; Set no bonus enemy on screen
+*$63E8 LD ($5DCA),A  ; Set no bonus enemy on screen
+; Rotate the helecopter blades
+ $63EB LD A,($631B)  ; Graphic for left blade
+ $63EE XOR $2A       ; Invert bits 1,3 and 5
+ $63F0 LD ($631B),A  ; Store it
+ $63F3 LD A,($6323)  ; Graphic for right blade
+ $63F6 XOR $2A       ; Invert bits 1,3 and 5
+ $63F8 LD ($6323),A  ; Store it
+ $63FB RET           ;
+
+; Move the plane
+;
+; Used by the routine at #R$5F89.
+c$63FC LD A,($5DCA)  ;  
+ $63FF CP C          ;
+ $6400 RET NZ        ;
+ $6401 LD A,C        ;
+ $6402 CP $01        ;
+ $6404 JR Z,$6453    ;
+ $6406 CP $1F        ;
+ $6408 JR Z,$640F    ;
+ $640A LD HL,$5DCB   ; Set that a bonus enemy is on screen
+ $640D SET 1,(HL)    ;
+*$640F LD DE,$631A   ; #R$631A - Plane graphic
+ $6412 BIT 7,(HL)    ;
+ $6414 JR Z,$641B    ;
+ $6416 LD DE,$632A   ; We hit the plane, use the blown up graphic instead at #R$632A
+ $6419 JR $642B      ;
+*$641B LD A,($5DD1)  ;
+ $641E BIT 0,A       ;
+ $6420 JR NZ,$642B   ;
+ $6422 LD DE,$6C07   ; #R$6C07 - Tank graphic
+ $6425 LD HL,$650F   ;
+ $6428 LD ($5DCD),HL ;
+*$642B LD A,($5DCA)  ;
+; Control continues to #R$642E
+
+; Draw a bonus enemy
+;
+; This entry point is used by the routine at #R$6453.
+;
+; A Current x co-ordinate of the bonus enemy 
+c$642E LD IX,($5DCD) ; Get screen position to draw at
+ $6432 LD L,(IX+$00) ; { Extract the screen address
+ $6435 LD H,(IX+$01) ; }
+ $6438 ADD A,L       ; { Add the appropriate offset
+ $6439 LD L,A        ; }
+ $643A LD A,(HL)     ; { Is there anything (eg: a tree)
+ $643B CP $00        ; at this location? }
+ $643D JR NZ,$6449   ; Move forward if there is
+ $643F LD H,(IX+$02) ; Extract the attribute
+ $6442 LD A,$07      ; { Set INK 7 
+ $6444 OR (HL)       ;
+ $6445 LD (HL),A     ; }
+ $6446 LD H,(IX+$01) ; Extract the display file address
+*$6449 LD B,$08      ; 8 rows
+*$644B LD A,(DE)     ; { Copy from graphic buffer to display file
+ $644C OR (HL)       ;
+ $644D LD (HL),A     ;
+ $644E INC H         ;
+ $644F INC DE        ;
+ $6450 DJNZ $644B    ; }
+ $6452 RET           ;
+
+; Move the tank
+;
+; Used by the routines at #R$5F89 and #R$63FC.
+c$6453 LD HL,$5DCB   ; Set that a bonus enemy is on screen
+ $6456 RES 1,(HL)    ;
+ $6458 LD DE,$6332   ; Address of graphic
+ $645B BIT 7,(HL)    ; Have we hit the enemy?
+ $645D JR NZ,$6472   ; 
+ $645F LD DE,$6322   ; Enemy has been hit, use the blown up graphic instead
+ $6462 LD A,($5DD1)  ;
+ $6465 BIT 0,A       ;
+ $6467 JR NZ,$6472   ;
+ $6469 LD HL,$650F   ;
+ $646C LD ($5DCD),HL ;
+ $646F LD DE,$6C0F   ;
+*$6472 LD A,($5DCA)  ;
+ $6475 INC A         ;
+ $6476 JR $642E      ;
+
+; Play "enemy bike exploding" sound
+;
+; Used by the routines at #R$6A33 and #R$6AC2.
+c$6478 EX AF,AF'     ;
+ $6479 LD B,$02      ; Timing constant
+*$647B DEC H         ;
+ $647C JR NZ,$6484   ;
+ $647E XOR $10       ; Toggle the speaker
+ $6480 OUT ($FE),A   ;
+ $6482 LD H,$4B      ;
+*$6484 DEC L         ;
+ $6485 JR NZ,$647B   ;
+ $6487 XOR $10       ; Toggle the speaker
+ $6489 OUT ($FE),A   ;
+ $648B LD L,$28      ;
+ $648D DJNZ $647B    ;
+ $648F EX AF,AF'     ;
+ $6490 RET           ;
+
+; Return a random 8-bit number in A
+;
+; Used by the routines at #R$5E00, #R$61F3 and #R$64B7.
+;
+c$6491 LD HL,($5CB0) ; Seed value
+ $6494 LD DE,($5DCF) ; Get the random number counter
+ $6498 INC DE        ;
+ $6499 LD ($5DCF),DE ; Increment it for the next round
+ $649D LD A,L        ;
+ $649E ADD A,H       ;
+ $649F ADD A,A       ;
+ $64A0 ADD A,H       ;
+ $64A1 AND $07       ;
+ $64A3 LD H,A        ;
+ $64A4 LD A,(HL)     ;
+ $64A5 ADD HL,DE     ;
+ $64A6 LD ($5CB0),HL ; Store new seed value
+ $64A9 ADD A,L       ;
+ $64AA RET           ;
+
+; Tree densities for each level
+;
+; The density is expressed as a probability of n / 256 that a tree
+; should appear in the next scan across the back row
+b$64AB DEFB $07,$0F,$19,$23,$2D,$37,$41,$4B
+
+; Tree densities for each level (not used)
+u$64B3 DEFB $55,$64,$78,$82
+
+; Recalculate new tree density based on sector
+;
+; Used by the routines at #R$65B3 and #R$69E3.
+c$64B7 XOR A         ; Clear $5B00 - $5BFF
+ $64B8 LD H,$5B      ; 
+ $64BA LD L,A        ;
+ $64BB LD B,A        ;
+*$64BC LD (HL),A     ;
+ $64BD INC L         ;
+ $64BE DJNZ $64BC    ;
+ $64C0 LD A,($5DD1)  ; Get the sector number
+ $64C3 LD HL,$64AB   ; Point to the tree density buffer at #R$64AB
+*$64C6 DEC A         ; Move to the right entry
+ $64C7 JR Z,$64CC    ; 
+ $64C9 INC HL        ;
+ $64CA JR $64C6      ;
+*$64CC LD B,(HL)     ; Store it in B
+*$64CD CALL $6491    ; Get a random location
+ $64D0 LD L,A        ;
+ $64D1 LD H,$5B      ;
+ $64D3 LD (HL),$20   ; Put a tree in it
+ $64D5 DJNZ $64CD    ; Return for however many more trees we need
+ $64D7 LD HL,$5B00   ; Go to the start of the buffer
+ $64DA LD B,$00      ;
+*$64DC PUSH BC       ;
+ $64DD PUSH HL       ;
+ $64DE LD B,$03      ;
+ $64E0 LD A,(HL)     ; Get current buffer position
+ $64E1 CP $20        ; Is there a tree here?
+ $64E3 JR NZ,$64ED   ; Move on if not
+*$64E5 INC L         ; Is there a tree next to it?
+ $64E6 CP (HL)       ;
+ $64E7 JR NZ,$64EB   ; Move on if not
+ $64E9 LD (HL),$00   ; Don't put trees next to each other
+*$64EB DJNZ $64E5    ;
+*$64ED POP HL        ;
+ $64EE POP BC        ;
+ $64EF INC HL        ;
+ $64F0 DJNZ $64DC    ;
+ $64F2 RET           ;
+
+; Flip-flop flag - alternates between $55 and $AA every frame
+ $64F3 DEFB $55
+
+; Offsets for screen positions
+;
+; Each entry is 3 bytes.
+; .
+; Attribute entry is 2 + 0; screen is 1 + 0
+b$64F4 DEFB $40,$40,$58
+ $64F7 DEFB $60,$40,$58
+ $64FA DEFB $80,$40,$58
+ $64FD DEFB $A0,$40,$58
+ $6500 DEFB $C0,$40,$58
+ $6503 DEFB $E0,$40,$58
+ $6506 DEFB $00,$48,$59
+ $6509 DEFB $20,$48,$59
+ $650C DEFB $40,$48,$59
+ $650F DEFB $60,$48,$59
+ $6512 DEFB $80,$48,$59
+ $6515 DEFB $A0,$48,$59
+ $6518 DEFB $C0,$48,$59
+ $651B DEFB $E0,$48,$59
+ $651E DEFB $00,$50,$5A
+ $6521 DEFB $20,$50,$5A
+ $6524 DEFB $40,$50,$5A
+ $6527 DEFB $60,$50,$5A
+ $652A DEFB $80,$50,$5A
+ $652D DEFB $A0,$50,$5A
+
+; Clear the screen
+;
+; Used by the routines at #R$65B3 and #R$6711.
+c$6530 LD HL,$4000   ; Blank the display file
+ $6533 LD DE,$4001   ;
+ $6536 LD BC,$1800   ;
+ $6539 LD (HL),$00   ;
+ $653B LDIR          ;
+ $653D LD BC,$02FF   ; Blank the attributes
+ $6540 LD (HL),$3B   ;
+ $6542 LDIR          ;
+ $6544 LD HL,$5AC0   ; Put the relevant colour
+ $6547 LD B,$1E      ; segments at the bottom
+ $6549 LD (HL),$7B   ; of the playing area
+ $654B INC L         ;
+*$654C LD (HL),$78   ;
+ $654E INC HL        ;
+ $654F DJNZ $654C    ;
+ $6551 LD (HL),$7B   ;
+ $6553 LD HL,$50C0   ;
+ $6556 LD B,$08      ;
+ $6558 LD A,$E0      ;
+*$655A LD (HL),A     ;
+ $655B INC H         ;
+ $655C DJNZ $655A    ;
+ $655E LD HL,$50DF   ;
+ $6561 LD B,$08      ;
+ $6563 LD A,$0F      ;
+*$6565 LD (HL),A     ;
+ $6566 INC H         ;
+ $6567 DJNZ $6565    ;
+ $6569 LD C,$04      ;
+ $656B LD HL,$50E0   ;
+*$656E LD B,$20      ;
+ $6570 PUSH HL       ;
+*$6571 LD (HL),$FF   ;
+ $6573 INC HL        ;
+ $6574 DJNZ $6571    ;
+ $6576 POP HL        ;
+ $6577 INC H         ;
+ $6578 DEC C         ;
+ $6579 JR NZ,$656E   ;
+ $657B CALL $66DB    ;
+ $657E RET           ;
+
+; Main entry point
+c$657F DI            ; Turn off interrupts
+ $6580 LD A,($5AE0)  ; The value of $5AE0 is set up in the BASIC
+ $6583 CP $24        ; It is unchanged?
+ $6585 CALL NZ,$0000 ; If not, reset - someone's been cracking the game
+ $6588 LD A,$01      ; Select BLUE border
+ $658A EX AF,AF'     ;
+ $658B CALL $60AA    ; Play an upward sound
+ $658E CALL $6B7F    ; Play a downward sound
+ $6591 LD A,$03      ; Select MAGENTA border
+ $6593 EX AF,AF'     ;
+ $6594 CALL $60AA    ; Play an upward sound
+ $6597 CALL $6B7F    ; Play a downward sound
+ $659A LD A,($5DEB)  ; Are we in debug mode?
+ $659D BIT 0,A       ;
+ $659F CALL Z,$6B96  ; Call debug / save game if so
+ $65A2 DI            ;
+ $65A3 LD HL,$6BD7   ; Set high score to 0
+ $65A6 LD B,$06      ; Six digits
+*$65A8 LD (HL),$30   ; "0"
+ $65AA INC HL        ; Next digit
+ $65AB DJNZ $65A8    ;
+ $65AD EX AF,AF'     ;
+ $65AE LD A,$07      ; White BORDER
+ $65B0 OUT ($FE),A   ; Set it
+ $65B2 EX AF,AF'     ;
+
+; Start a new game
+;
+; Used by the routine at #R$6711.
+c$65B3 LD HL,$5DC0   ; Clear all the status flags
+ $65B6 LD DE,$5DC1   ;
+ $65B9 LD BC,$0030   ;
+ $65BC LD (HL),$00   ;
+ $65BE LDIR          ;
+ $65C0 CALL $6371    ;
+ $65C3 LD A,$03      ;
+ $65C5 LD ($5DC8),A  ; Both bikes running
+ $65C8 LD ($5DC3),A  ;
+ $65CB LD ($5DC2),A  ;
+ $65CE LD ($5DCC),A  ;
+ $65D1 LD ($5DD5),A  ; Bikes far away
+ $65D4 LD A,$33      ;
+ $65D6 LD ($6987),A  ; Set 3 lives
+ $65D9 CALL $6530    ; Clear the screen
+ $65DC CALL $686B    ; Stop any firing
+ $65DF CALL $6918    ; Display the bike
+ $65E2 LD HL,$02E0   ; Large playing area
+ $65E5 LD ($5DE6),HL ;
+ $65E8 CALL $6772    ; Get rid of any trees
+ $65EB LD HL,$01A0   ; Small playing area
+ $65EE LD ($5DE6),HL ;
+ $65F1 LD A,$01      ;
+ $65F3 LD ($5DE8),A  ; Set bike not moving
+ $65F6 LD ($5DD1),A  ; Set to sector 1
+ $65F9 CALL $64B7    ; Work out what trees we need
+ $65FC LD A,$55      ;
+ $65FE LD ($5DD3),A  ; Set to day patrol
+ $6601 LD B,$0A      ;
+*$6603 PUSH BC       ;
+ $6604 CALL $5E00    ; Draw the playing area
+ $6607 POP BC        ;
+ $6608 DJNZ $6603    ;
+ $660A XOR A         ; Reset the following flags :
+ $660B LD ($5DE8),A  ; Bike not moving
+ $660E LD ($5DD1),A  ; Sector 1
+ $6611 LD ($5DD6),A  ; Enemies far away
+ $6614 LD ($5DC6),A  ; Default enemy bike 1 position
+ $6617 LD A,$20      ;
+ $6619 LD ($5DC7),A  ; Default enemy bike 2 position
+ $661C LD A,$02      ;
+ $661E LD ($5DEC),A  ; Idle speed
+ $6621 CALL $5F89    ; Print objects on the playing field
+ $6624 CALL $62CB    ; Switch to a new sector
+ $6627 CALL $628D    ; Print "KEYBOARD"
+ $662A CALL $6BDD    ; Update high score
+; Set the current score to 0
+ $662D LD B,$06      ; Six digits
+ $662F LD HL,$6BCD   ; Point to score buffer
+*$6632 LD (HL),$30   ; "0"
+ $6634 INC HL        ; Next character
+ $6635 DJNZ $6632    ; 
+ $6637 CALL $6969    ; Print score
+ $663A CALL $6BFC    ; Print high score
+
+; Main loop
+c$663D EI            ; Wait for NMI to fire to stop screen flicker
+ $663E DI            ;
+ $663F CALL $669D    ; Check for input
+ $6642 LD A,($5DDE)  ; Did we hit a bike?
+ $6645 BIT 0,A       ; 
+ $6647 CALL Z,$68F0  ; If not, check for fire and act accordingly
+ $664A CALL $5EFE    ; Respond to bike movement
+ $664D CALL $5E00    ; Move the trees
+ $6650 LD A,($5DD7)  ; Are we firing the photon bolt?
+ $6653 BIT 0,A       ;
+ $6655 CALL NZ,$6A28 ; If so, adjust its position
+ $6658 CALL $5F89    ; Print objects on the playing field
+ $665B LD A,($5DDE)  ;
+ $665E BIT 0,A       ;
+ $6660 CALL NZ,$69E3 ;
+ $6663 CALL $69CD    ; Toggle the range indicator
+ $6666 CALL $69A7    ; 
+ $6669 CALL $61F3    ; Recalculate where enemy bikes should be
+ $666C LD A,($5DC6)  ;
+ $666F LD HL,$5DC7   ;
+ $6672 CP (HL)       ;
+ $6673 JR NZ,$667A   ;
+ $6675 LD A,($5DC5)  ;
+ $6678 ADD A,(HL)    ;
+ $6679 LD (HL),A     ;
+*$667A CALL $66FD    ; Check to see if we hit a tree
+ $667D CALL $67C6    ; Move the bikes nearer or further depending on speed
+ $6680 CALL $633A    ; Move a plan or tank if necessary
+ $6683 LD A,($5DDE)  ; Did we hit a bike?
+ $6686 BIT 0,A       ;
+ $6688 JR NZ,$669A   ; Move on if we did
+ $668A LD A,($5DD7)  ; Is the photon bolt being fired?
+ $668D BIT 0,A       ;
+ $668F JR Z,$669A    ; Skip if it isn't
+ $6691 CALL $6859    ; Draw the trail of the photon bolt
+ $6694 CALL $6A28    ; Move it left or right appropriately
+ $6697 CALL $6813    ; See if anything has been hit?
+*$669A JP $663D      ; Back to start
+
+; Check for Kempston input (if configured)
+;
+; Used by the routine at #R$663D.
+c$669D LD A,($5DC9)  ; Get game input
+ $66A0 BIT 0,A       ; Is KEYBOARD configured?
+ $66A2 JR Z,$66AF    ; Move on if so
+ $66A4 IN A,($1F)    ; Get Kempston input
+ $66A6 BIT 2,A       ; Check for DOWN
+ $66A8 JR NZ,$66CC   ; Jump if so
+ $66AA BIT 3,A       ; Check for UP
+ $66AC JR NZ,$66BC   ; Jump if so
+ $66AE RET           ;
+
+; Check for keyboard input
+;
+; Used by the routine at #R$669D.
+c$66AF LD A,$EF      ; Select 0-6
+ $66B1 IN A,($FE)    ; Get keypresses
+ $66B3 BIT 1,A       ; Check for '9'
+ $66B5 JR Z,$66BC    ; Jump if so
+ $66B7 BIT 2,A       ; Check for '8'
+ $66B9 JR Z,$66CC    ; Jump if so
+ $66BB RET           ;
+
+; Speed up
+;
+; Used by the routines at #R$669D and #R$66AF.
+c$66BC LD A,($5DEC)  ; Get current speed
+ $66BF CP $00        ; Are we at top speed?
+ $66C1 RET Z         ; Return if so
+ $66C2 DEC A         ; Increase speed
+; This entry point is used by the routine at #R$66CC.
+*$66C3 LD ($5DEC),A  ; Set new speed
+ $66C6 LD A,$01      ; Set bike is moving
+ $66C8 LD ($5DE8),A  ;
+ $66CB RET           ;
+
+; Slow down
+;
+; Used by the routines at #R$669D and #R$66AF.
+c$66CC LD A,($5DEC)  ; Get current speed
+ $66CF CP $02        ; Are we stationary?
+ $66D1 JR Z,$66D6    ; Move on if so
+ $66D3 INC A         ; Reduce speed
+ $66D4 JR $66C3      ; Jump to set the new speed
+
+; Idle
+;
+; Used by the routines at #R$66CC and #R$69E3.
+c$66D6 XOR A         ; Reset "bike is moving" flag
+ $66D7 LD ($5DE8),A  ;
+ $66DA RET           ;
+
+; Print the bike's handlebars
+;
+; Used by the routines at #R$5F28, #R$5F47, #R$5F66, #R$6530, #R$6711 and
+; #R$69E3.
+c$66DB LD DE,$504D   ; Target the first column
+ $66DE LD HL,$7000   ; #R$7000 - Handlebar graphic. Can be changed to #R$707E or #R$70FC depending on movement
+ $66E1 CALL $66E7    ; { Call once for the left column
+ $66E4 LD DE,$506D   ; then repeat for the right }
+*$66E7 LD B,$08      ; 8 lines
+*$66E9 PUSH BC       ;
+ $66EA PUSH DE       ;
+ $66EB LD BC,$0007   ; 7x8 pixels per line
+ $66EE LDIR          ; Copy pixels
+ $66F0 POP DE        ;
+ $66F1 INC D         ; Next line
+ $66F2 POP BC        ;
+ $66F3 DJNZ $66E9    ;
+ $66F5 LD D,$5A      ; Point to attributes
+ $66F7 LD BC,$0007   ; Copy attributes
+ $66FA LDIR          ;
+ $66FC RET           ;
+
+; Collision detection. Did we hit anything?
+;
+; Used by the routine at #R$663D.
+c$66FD LD B,$05      ; Check 5 centre places
+ $66FF LD HL,$5DDF   ; Get the handlebar positions
+ $6702 LD A,$8E      ; { Offset to $8D, $8E or $8F
+ $6704 ADD A,(HL)    ; depending on where facing }
+ $6705 LD L,A        ;
+ $6706 LD H,$7F      ;
+ $6708 LD A,$00      ; Point to the front row of trees
+*$670A CP (HL)       ; Is there a tree here?
+ $670B JR NZ,$6711   ; Yes, we're in trouble!
+ $670D INC HL        ; Move to next point
+ $670E DJNZ $670A    ;
+ $6710 RET           ; No collision, move on
+
+; CRASH - hit a tree! Bring it close up to the player so we crash into it
+;
+; Used by the routine at #R$66FD.
+c$6711 LD H,$7F      ; Get the tree position
+ $6713 LD L,$8D      ; adjusted for where
+ $6715 LD A,($5DDF)  ; the player is travelling
+ $6718 ADD A,L       ;
+ $6719 LD L,A        ;
+ $671A LD B,$03      ;
+*$671C LD (HL),$20   ; Put a tree here
+ $671E INC HL        ;
+ $671F DJNZ $671C    ;
+ $6721 LD B,$03      ;
+*$6723 LD (HL),$40   ; Put a big tree here
+ $6725 INC HL        ;
+ $6726 DJNZ $6723    ;
+ $6728 CALL $5F89    ; Recalculate trees
+ $672B LD HL,$504D   ; Copy the bottom of the tree down so it meets the bike
+ $672E LD B,$08      ;
+*$6730 PUSH HL       ;
+ $6731 PUSH BC       ;
+ $6732 LD B,$07      ;
+*$6734 LD A,($502F)  ;
+ $6737 OR (HL)       ;
+ $6738 LD (HL),A     ;
+ $6739 INC HL        ;
+ $673A DJNZ $6734    ;
+ $673C POP BC        ;
+ $673D POP HL        ;
+ $673E INC H         ;
+ $673F DJNZ $6730    ;
+ $6741 XOR A         ;
+ $6742 LD ($5DE8),A  ; Turn off firing
+ $6745 LD A,$02      ;
+ $6747 LD ($5DEC),A  ; Stop the bike
+ $674A CALL $6781    ; Play a "hit tree" effect
+ $674D CALL $6530    ; Clear the screen
+ $6750 CALL $6772    ; and the playing area
+ $6753 CALL $686B    ; Stop firing
+ $6756 CALL $6918    ; Restore the display
+ $6759 CALL $66DB    ; and the handlebars
+ $675C LD A,($6987)  ; Get the number of lives
+ $675F DEC A         ; Remove one
+ $6760 LD ($6987),A  ; Set the new value
+ $6763 CP $30        ; Have we run out of lives?
+ $6765 PUSH AF       ;
+ $6766 CALL $6974    ; Print new number of lives
+ $6769 POP AF        ;
+ $676A RET NZ        ; More lives left
+ $676B POP HL        ;
+ $676C CALL $6B71    ; Game over!
+ $676F JP $65B3      ; Back to start sequence
+
+; Wipe out playing area
+;
+; Used by the routines at #R$65B3 and #R$6711.
+c$6772 LD HL,$7F9F   ; End of playing area
+ $6775 LD DE,$7F9E   ;
+ $6778 LD BC,($5DE6) ; Size of playing area
+ $677C LD (HL),$00   ; { Set to 0
+ $677E LDDR          ; and copy }
+ $6780 RET           ;
+
+; Play "hit a tree" sequence
+;
+; Used by the routine at #R$6711.
+c$6781 EX AF,AF'     ; Save A
+ $6782 LD B,$3C      ; White PAPER, green INK
+*$6784 LD HL,$5840   ; Start of playing attribute area
+ $6787 LD DE,$5841   ;
+ $678A LD (HL),B     ; Fill attribute
+ $678B PUSH BC       ;
+ $678C LD B,$54      ;
+*$678E PUSH BC       ;
+ $678F BIT 0,B       ;
+ $6791 JR Z,$679F    ;
+ $6793 BIT 1,B       ;
+ $6795 JR Z,$679F    ;
+ $6797 XOR $10       ; Toggle speaker to play a sound
+ $6799 OUT ($FE),A   ;
+ $679B BIT 3,B       ;
+ $679D JR Z,$679F    ;
+*$679F LD BC,$0008   ; Fill line
+ $67A2 LDIR          ;
+ $67A4 XOR $10       ; Toggle speaker to play sound
+ $67A6 OUT ($FE),A   ;
+ $67A8 POP BC        ;
+ $67A9 DJNZ $678E    ;
+ $67AB LD (HL),$38   ; White PAPER, black INK
+ $67AD POP BC        ;
+ $67AE DJNZ $6784    ;
+ $67B0 LD DE,$D010   ;
+*$67B3 LD H,$03      ;
+*$67B5 XOR $10       ; Turn speaker on / off
+ $67B7 OUT ($FE),A   ;
+ $67B9 LD B,E        ;
+*$67BA DJNZ $67BA    ;
+ $67BC DEC H         ;
+ $67BD JR NZ,$67B5   ;
+ $67BF INC E         ;
+ $67C0 DEC D         ;
+ $67C1 JR NZ,$67B3   ;
+ $67C3 DEC H         ;
+ $67C4 EX AF,AF'     ;
+ $67C5 RET           ;
+
+; Make the bikes get nearer or further away
+;
+; Used by the routine at #R$663D.
+c$67C6 LD A,($5DEC)  ; Get the current speed
+ $67C9 CP $00        ; Are we "fast"
+ $67CB JR NZ,$67EE   ; Move on if not
+ $67CD LD A,($5DC6)  ; Get enemy bike 1 position
+ $67D0 CP $20        ; Should be between 0 - 1F 
+ $67D2 JR NC,$67FA   ; Move on if not
+*$67D4 LD A,($5DD5)  ; Get distance to the bikes
+ $67D7 DEC A         ; Decrease it
+ $67D8 JR Z,$67DE    ; Jump forward if we are in range
+ $67DA LD ($5DD5),A  ; Set new value
+ $67DD RET           ;
+*$67DE LD A,$1E      ; Set distance to bikes 
+ $67E0 LD ($5DD5),A  ;
+ $67E3 LD A,($5DD6)  ; Are bikes in range yet?
+ $67E6 CP $03        ;
+ $67E8 RET Z         ; Return if not
+ $67E9 INC A         ; Increase frame
+ $67EA LD ($5DD6),A  ;
+ $67ED RET           ;
+*$67EE LD A,($5DD6)  ;
+ $67F1 CP $00        ;
+ $67F3 RET Z         ;
+ $67F4 DEC A         ;
+ $67F5 LD ($5DD6),A  ;
+ $67F8 RET           ;
+ $67F9 RET           ;
+*$67FA LD A,($5DC7)  ; Get enemy bike 2 position
+ $67FD CP $20        ; Should be between 0 - 1F
+ $67FF JR C,$67D4    ; Check it if it is
+ $6801 RET           ; Otherwise return
+
+; Track the photon bolt on screen
+;
+; Used by the routine at #R$5F89.
+c$6802 LD A,($5DDE)  ;
+ $6805 BIT 0,A       ;
+ $6807 RET NZ        ;
+ $6808 LD A,($5DCB)  ; Is a bike being blown up?
+ $680B BIT 7,(HL)    ;
+ $680D RET NZ        ; Return if it is
+ $680E LD A,($5DD8)  ;
+ $6811 CP C          ;
+ $6812 RET NZ        ;
+; This entry point is used by the routine at #R$663D.
+*$6813 LD A,($5DCB)  ; Is a bike being blown up?
+ $6816 BIT 7,A       ;
+ $6818 RET NZ        ; Return if it is
+ $6819 LD DE,($5DDC) ; Get the next photon bolt graphic
+ $681D LD IX,($5DDA) ; Get the screen location for it
+ $6821 LD L,(IX+$00) ; Put the display position in HL
+ $6824 LD H,(IX+$01) ;
+ $6827 LD A,($5DD8)  ; Get current photon bolt offset
+ $682A ADD A,L       ;
+ $682B LD L,A        ; Adjust display file to the right place
+ $682C LD A,(HL)     ; Get the current display file offset
+ $682D INC A         ; Is there anything here (eg: tree)?
+ $682E DEC A         ;
+ $682F JR NZ,$6886   ; Jump forward if there is something here
+ $6831 LD B,$08      ; 8 lines
+*$6833 LD A,(DE)     ; Get character
+ $6834 OR (HL)       ; { Merge it with what's on screen
+ $6835 LD (HL),A     ; and store it }
+ $6836 INC H         ; Move to next line
+ $6837 INC DE        ;
+ $6838 DJNZ $6833    ;
+ $683A LD H,(IX+$02) ; Get attribute address
+ $683D LD A,$07      ; Set white INK
+ $683F OR (HL)       ; { Merge which what's there
+ $6840 LD (HL),A     ; and store it }
+ $6841 LD A,($5DD9)  ; Get photon bolt distance
+ $6844 DEC A         ; One less
+ $6845 JR Z,$686B    ; Jump if we've finished firing
+ $6847 DEC IX        ; Back to offset store
+ $6849 DEC IX        ;
+ $684B DEC IX        ;
+ $684D LD ($5DDA),IX ; Store next screen location
+ $6851 LD ($5DDC),DE ; Store next graphic
+ $6855 LD ($5DD9),A  ; Store next distance
+ $6858 RET           ;
+
+; Draw trail of photon bolt
+;
+; Used by the routine at #R$663D.
+c$6859 LD IX,($5DDA) ; Get the screen offset for the photon bolt
+ $685D LD L,(IX+$03) ; Put the attribute address in HL
+ $6860 LD H,(IX+$05) ;
+ $6863 LD A,($5DD8)  ; Get photon bolt position
+ $6866 ADD A,L       ;
+ $6867 LD L,A        ; Adjust the attribute address relative to this
+ $6868 LD (HL),$23   ; Set to green PAPER, magenta INK
+ $686A RET           ;
+
+; Stop photon bolt (so another can be fired)
+;
+; Used by the routines at #R$65B3, #R$6711, #R$6802 and #R$6886.
+c$686B LD HL,$6521   ; Start of pointers to screen offsets
+ $686E LD ($5DDA),HL ; Set the photon bolt back to the start
+ $6871 LD A,$07      ; Set max distance
+ $6873 LD ($5DD9),A  ;
+ $6876 LD HL,$7214   ; Set to start of graphic buffer at #R$7214
+ $6879 LD ($5DDC),HL ; Set the current frame to the start
+ $687C LD A,$10      ; Set adjustment on screen
+ $687E LD ($5DD8),A  ;
+ $6881 XOR A         ; Not firing a photon bolt
+ $6882 LD ($5DD7),A  ;
+ $6885 RET           ;
+
+; The photon bolt has hit something, find out what
+;
+; Used by the routine at #R$6802.
+; HL Screen address of the photon bolt
+; IX Pointer to offset table at #R$64F4 where the photon bolt was fired
+c$6886 LD A,($5DD6)  ; Get the range flag
+ $6889 CP $03        ; Are the bikes in range
+ $688B JR NZ,$689B   ; Skip bike checking if not in range
+ $688D LD H,(IX+$02) ; Get the attribute
+ $6890 LD A,(HL)     ;
+ $6891 AND $07       ; Extract just the INK colour
+ $6893 CP $06        ; Is it yellow?
+ $6895 JR Z,$68A2    ; Move forward - hit enemy bike 1
+ $6897 CP $01        ; Is it blue?
+ $6899 JR Z,$68B9    ; Move forward - hit enemy bike 2
+*$689B CP $07        ; Is it white?
+ $689D JR Z,$68DD    ; Move forward - hit the bonus enemy
+ $689F JP $686B      ; Hit a tree, do nothing
+; Enemy bike 1 has been hit
+*$68A2 LD A,($5DC8)  ; Get flags for bikes in play
+ $68A5 RES 0,A       ; Remove bike 1
+ $68A7 LD ($5DC8),A  ; Set it
+ $68AA LD A,($5DC6)  ; Get bike position
+ $68AD LD ($5DE1),A  ; Set the position of the blown up bike to it
+ $68B0 XOR A         ;
+ $68B1 LD ($5DC6),A  ; Bike out of play
+ $68B4 LD ($5DC4),A  ; Bike not moving
+ $68B7 JR $68CE      ;
+; Enemy bike 2 has been hit
+*$68B9 LD A,($5DC8)  ; Get flags for bikes in play
+ $68BC RES 1,A       ; Remove bike 2
+ $68BE LD ($5DC8),A  ; Set it
+ $68C1 LD A,($5DC7)  ; Get bike position
+ $68C4 LD ($5DE1),A  ; Set the position of the blown up bike to it
+ $68C7 XOR A         ;
+ $68C8 LD ($5DC7),A  ; Bike out of play
+ $68CB LD ($5DC5),A  ; Bike not moving
+; Mark either bike as "blown up"
+*$68CE LD A,$07      ;
+ $68D0 LD ($5DE0),A  ; 7 frames before bike explodes
+ $68D3 LD ($5DE4),HL ; Location of explosion
+ $68D6 LD A,$01      ;
+ $68D8 LD ($5DDE),A  ; Set that the photon bolt hit an enemy
+ $68DB JR $68EA      ;
+; Bonus enemy has been hit 
+*$68DD LD HL,$5DCB   ; Set the enemy is being blown up
+ $68E0 SET 7,(HL)    ;
+ $68E2 LD A,$07      ; Reset time to redraw enemy
+ $68E4 LD ($5DCC),A  ;
+ $68E7 CALL $6989    ; Print the score
+*$68EA CALL $6989    ; Print the score (again?)
+ $68ED JP $686B      ;
+
+; See if fire is pressed and if so, set a photon bolt to fire
+;
+; Used by the routine at #R$663D.
+c$68F0 LD A,($5DEC)  ; Are we at full speed
+ $68F3 AND A         ;
+ $68F4 RET NZ        ; Return if we're not
+ $68F5 LD A,($5DC9)  ; Are we using KEYBOARD?
+ $68F8 BIT 0,A       ;
+ $68FA JR Z,$6903    ; Move forward if so
+ $68FC IN A,($1F)    ; Check KEMPSTON
+ $68FE BIT 4,A       ; Was "fire" pressed?
+ $6900 JR NZ,$690C   ; Jump forward if so
+ $6902 RET           ; Fire not pressed, return
+ $6903 LD A,$7F      ; Check B-SPACE
+ $6905 IN A,($FE)    ; 
+ $6907 AND $1F       ; Did we press any keys?
+ $6909 XOR $1F       ;
+ $690B RET Z         ; Return if we didn't
+*$690C LD A,($5DCB)  ; User pressed fire, so store it
+ $690F BIT 7,A       ; Is a bike already being blown up?
+ $6911 RET NZ        ; Return if it is
+ $6912 LD HL,$5DD7   ; Set that we are in mid-fire
+ $6915 LD (HL),$01   ;
+ $6917 RET           ;
+
+; Print the bike and static display
+;
+; Used by the routines at #R$65B3, #R$6711 and #R$69E3.
+c$6918 LD DE,$5080   ; Point to first line
+ $691B LD HL,$6DBF   ; #R$6DBF - Start of display graphic
+ $691E LD B,$10      ;
+*$6920 PUSH BC       ;
+ $6921 PUSH DE       ;
+ $6922 LD BC,$0020   ;
+ $6925 LDIR          ; Copy the line
+ $6927 POP DE        ;
+ $6928 POP BC        ;
+ $6929 INC D         ;
+ $692A LD A,D        ;
+ $692B AND $07       ;
+ $692D JR NZ,$6932   ;
+ $692F LD DE,$50A0   ; Point to second line
+*$6932 DJNZ $6920    ;
+ $6934 LD DE,$5A80   ; Start of attribute buffer
+ $6937 LD BC,$0040   ;
+ $693A LDIR          ; Copy the attributes
+ $693C CALL $6969    ; Print the score
+ $693F CALL $6974    ; Print number of lives
+ $6942 CALL $69BB    ; Print the range indicator
+ $6945 CALL $6BFC    ; Print the high score
+ $6948 RET           ;
+
+; Print a string
+;
+; Used by the routines at #R$6074, #R$60C1, #R$628D, #R$6298, #R$62A3, #R$6969,
+; #R$6974, #R$698E, #R$69BB, #R$6B71, #R$6BFC and #R$6C3A.
+;
+; HL Screen offset of first character
+; DE Pointer to first character in text
+; B Length
+;
+c$6949 PUSH DE       ;
+ $694A PUSH HL       ;
+ $694B PUSH BC       ;
+ $694C LD A,(DE)     ; Get character
+ $694D EX DE,HL      ; Get character address and put it in DE
+ $694E LD BC,$3C00   ; Character set
+ $6951 LD L,A        ; 
+ $6952 LD H,$00      ;
+ $6954 ADD HL,HL     ;
+ $6955 ADD HL,HL     ;
+ $6956 ADD HL,HL     ;
+ $6957 ADD HL,BC     ;
+ $6958 EX DE,HL      ; 
+ $6959 LD B,$08      ; 8 lines
+*$695B LD A,(DE)     ; Get line
+ $695C LD (HL),A     ; Put it on screen
+ $695D INC H         ; Next line
+ $695E INC DE        ; 
+ $695F DJNZ $695B    ;
+ $6961 POP BC        ;
+ $6962 POP HL        ;
+ $6963 POP DE        ;
+ $6964 INC HL        ;
+ $6965 INC DE        ;
+ $6966 DJNZ $6949    ; Next character 
+ $6968 RET           ;
+
+; Print the current score
+;
+; Used by the routines at #R$65B3 and #R$6918.
+c$6969 LD HL,$50A1   ; Position on screen
+ $696C LD DE,$6BCA   ; ":$:000000"
+ $696F LD B,$0A      ; Number of characters
+ $6971 JP $6949      ;
+
+; Print number of lives
+;
+; Used by the routines at #R$6711 and #R$6918.
+c$6974 LD DE,$697F   ; Position on screen
+ $6977 LD HL,$50C1   ; ":LIVES :3:"
+ $697A LD B,$0A      ; Number of characters
+ $697C JP $6949      ;
+
+; ":LIVES : 3:"
+t$697F DEFM ":LIVES :3:"
+
+; Update the current score
+;
+; Used by the routines at #R$6886 and #R$6C17.
+c$6989 LD HL,$6BCF   ; "000000"
+ $698C JR $6991      ;
+
+; Update the high score
+;
+; Used by the routine at #R$69A7.
+c$698E LD HL,$6BD2   ; "000000"
+; This entry point is used by the routine at #R$6989.
+*$6991 LD A,$3A      ;
+ $6993 JR $6998      ;
+*$6995 LD (HL),$30   ;
+ $6997 DEC HL        ;
+*$6998 INC (HL)      ;
+ $6999 CP (HL)       ;
+ $699A JR Z,$6995    ;
+ $699C LD DE,$6BCD   ;
+ $699F LD HL,$50A4   ;
+ $69A2 LD B,$06      ;
+ $69A4 JP $6949      ;
+
+; Set up some flags (non useful?)
+;
+; Used by the routine at #R$663D.
+c$69A7 LD A,($5DEC)  ; { Are we stationary?
+ $69AA AND A         ; }
+ $69AB RET NZ        ; Return if we're not
+ $69AC LD A,($5DC6)  ; Is bike 1 more than $20 characters away?
+ $69AF CP $1F        ;
+ $69B1 JR C,$698E    ; Update the high score if so
+ $69B3 LD A,($5DC7)  ; Is enemy bike 2 more than $20 characters away?
+ $69B6 CP $1F        ;
+ $69B8 JR C,$698E    ; Update the high score if so
+ $69BA RET           ;
+
+; Print the range indicator
+;
+; Used by the routine at #R$6918.
+c$69BB LD DE,$69C6   ; "[] RANGE"
+ $69BE LD HL,$50D6   ;
+ $69C1 LD B,$07      ;
+ $69C3 JP $6949      ;
+
+; "[] RANGE"
+t$69C6 DEFM "[]RANGE"
+
+; Toggle the range indicator on or off
+;
+; Used by the routine at #R$663D.
+c$69CD LD A,($5DD6)  ; Get bike proximity
+ $69D0 CP $03        ; Are we in range?
+ $69D2 LD HL,$5AD6   ; Pointer to attribute buffer
+ $69D5 JR Z,$69DD    ; Move forward if we're in range
+ $69D7 RES 7,(HL)    ; Not in range, turn FLASH off
+ $69D9 INC HL        ;
+ $69DA RES 7,(HL)    ;
+ $69DC RET           ;
+*$69DD SET 7,(HL)    ; In range, turn FLASH on
+ $69DF INC HL        ;
+ $69E0 SET 7,(HL)    ;
+ $69E2 RET           ;
+
+; We hit a bike - destroy it
+;
+; Used by the routine at #R$663D.
+c$69E3 LD A,($5DE0)  ; Reduce the number of frames
+ $69E6 DEC A         ; left to display a blown up
+ $69E7 LD ($5DE0),A  ; bike before it shatters
+ $69EA JR NZ,$6A33   ; Move forward if there is more
+ $69EC CALL $6AC2    ; Display the enemy pieces shattering
+ $69EF CALL $66DB    ; Reprint the handlebars
+ $69F2 XOR A         ;
+ $69F3 LD ($5DDE),A  ;
+ $69F6 CALL $6918    ; Draw the bike
+ $69F9 LD A,($5DD2)  ; Get number of bikes left
+ $69FC DEC A         ; Remove one
+ $69FD LD ($5DD2),A  ; Store it
+ $6A00 RET NZ        ; Return if there are more bikes left
+; Both bikes have been destroyed - this level is complete
+ $6A01 LD B,$02      ;
+ $6A03 LD A,$01      ;
+*$6A05 LD ($5DEC),A  ;
+ $6A08 INC A         ;
+ $6A09 PUSH BC       ;
+ $6A0A PUSH AF       ;
+ $6A0B CALL $5EFE    ; Check for movement
+ $6A0E CALL $5E00    ; Move the trees
+ $6A11 CALL $5F89    ; Update other moving objects
+ $6A14 POP AF        ;
+ $6A15 POP BC        ;
+ $6A16 DJNZ $6A05    ;
+ $6A18 CALL $66D6    ;
+ $6A1B CALL $62CB    ; Move on a sector
+ $6A1E LD A,($5DD3)  ; Is this night patrol?
+ $6A21 BIT 0,A       ;
+ $6A23 RET NZ        ; Return if not
+ $6A24 CALL $64B7    ; Otherwise, move on a level
+ $6A27 RET           ;
+
+; Adjust the photon bolt left or right
+;
+; Used by the routine at #R$663D.
+c$6A28 LD A,($5DDF)  ; Get current direction
+ $6A2B LD HL,$5DD8   ; Get photon bolt screen offset
+ $6A2E ADD A,(HL)    ; Adjust accordingly
+ $6A2F LD ($5DD8),A  ; Set back
+ $6A32 RET           ;
+
+; Display an exploding bike
+;
+; Used by the routine at #R$69E3.
+c$6A33 LD HL,$5940   ; Start of row to display explosion. The column is dependent where the bike is
+ $6A36 LD A,($5DE1)  ; Get position of bike
+ $6A39 DEC A         ; { Convert this to an on-screen attribute address
+ $6A3A ADD A,L       ;
+ $6A3B LD L,A        ; }
+ $6A3C PUSH HL       ;
+ $6A3D LD DE,$001E   ;
+ $6A40 LD B,$03      ; 3 rows
+*$6A42 LD A,($5DE0)  ; Get current explosion attribute colour
+ $6A45 LD C,A        ;
+ $6A46 LD A,(HL)     ;
+ $6A47 AND $F8       ; Clear INK colour
+ $6A49 OR C          ;
+ $6A4A LD (HL),A     ; { Copy the attributes
+ $6A4B INC HL        ;
+ $6A4C LD (HL),A     ;
+ $6A4D INC HL        ;
+ $6A4E LD (HL),A     ; }
+ $6A4F ADD HL,DE     ; Move to next row
+ $6A50 DJNZ $6A42    ; Repeat until done
+; Put the explosion graphic on screen
+ $6A52 POP HL        ;
+ $6A53 LD H,$48      ; Convert from attribute to display file
+ $6A55 LD DE,$6A7A   ; #R$6A7A - Location of explosion graphic
+ $6A58 LD B,$03      ; 3 rows
+*$6A5A PUSH BC       ;
+ $6A5B PUSH HL       ;
+ $6A5C LD B,$03      ; 3 columns
+*$6A5E PUSH BC       ;
+ $6A5F PUSH HL       ;
+ $6A60 LD B,$08      ;
+*$6A62 LD A,(DE)     ;
+ $6A63 OR (HL)       ;
+ $6A64 LD (HL),A     ;
+ $6A65 INC H         ;
+ $6A66 INC DE        ;
+ $6A67 DJNZ $6A62    ;
+ $6A69 POP HL        ;
+ $6A6A LD BC,$0020   ;
+ $6A6D ADD HL,BC     ;
+ $6A6E POP BC        ;
+ $6A6F DJNZ $6A5E    ;
+ $6A71 POP HL        ;
+ $6A72 INC HL        ;
+ $6A73 POP BC        ;
+ $6A74 DJNZ $6A5A    ;
+ $6A76 CALL $6478    ; Play an explosion sound
+ $6A79 RET           ;
+
+; Explosion graphic
+b$6A7A DEFB $01,$03,$0E,$1D,$3A,$75,$EA,$F5 ; { #UDGTABLE 
+ $6A82 DEFB $EA,$D5,$EA,$D5,$EA,$75,$3A,$35 ; { #UDG$6A7A,39 | #UDG$6A92,39 | #UDG$6AAA,39 }
+ $6A8A DEFB $1A,$1D,$0E,$0D,$07,$06,$03,$01 ; { #UDG$6A82,39 | #UDG$6A9A,39 | #UDG$6AB2,39 }
+ $6A92 DEFB $CF,$C3,$19,$3D,$3C,$FF,$B7,$DB ; { #UDG$6A8A,39 | #UDG$6AA2,39 | #UDG$6ABA,39 }
+ $6A9A DEFB $D9,$76,$6A,$7E,$54,$7E,$55,$3C ; UDGTABLE#
+ $6AA2 DEFB $76,$AB,$3C,$9A,$59,$BB,$5A,$C9 ;
+ $6AAA DEFB $E4,$F0,$F9,$7C,$7E,$BF,$7D,$FA ;
+ $6AB2 DEFB $7F,$F6,$3F,$3F,$7E,$7C,$AF,$5E ;
+ $6ABA DEFB $FE,$7E,$FC,$F8,$F0,$E0,$C0,$80 ; } 
+
+; Show the enemy bikes pieces shattering
+;
+; Used by the routine at #R$69E3.
+c$6AC2 LD HL,$3CDD   ;
+ $6AC5 LD ($5DE2),HL ;
+ $6AC8 LD HL,($5DE4) ;
+ $6ACB LD A,$07      ;
+ $6ACD LD DE,$0020   ;
+ $6AD0 LD B,$07      ;
+ $6AD2 LD C,$01      ;
+*$6AD4 PUSH BC       ;
+ $6AD5 LD B,C        ;
+ $6AD6 CALL $6B0E    ; Draw top left piece
+*$6AD9 ADD HL,DE     ;
+ $6ADA DJNZ $6AD9    ;
+ $6ADC LD B,C        ;
+ $6ADD CALL $6B0E    ; Draw bottom right piece
+*$6AE0 INC HL        ;
+ $6AE1 DJNZ $6AE0    ;
+ $6AE3 LD B,C        ;
+ $6AE4 CALL $6B0E    ; Draw bottom left piece
+*$6AE7 AND A         ;
+ $6AE8 SBC HL,DE     ;
+ $6AEA DJNZ $6AE7    ;
+ $6AEC LD B,C        ;
+ $6AED CALL $6B0E    ; Draw bottom right piece
+*$6AF0 DEC HL        ;
+ $6AF1 DJNZ $6AF0    ;
+ $6AF3 PUSH HL       ;
+ $6AF4 PUSH DE       ;
+ $6AF5 PUSH AF       ;
+ $6AF6 CALL $5EFE    ; Check for movement controls
+ $6AF9 CALL $5E00    ; Move the trees
+ $6AFC CALL $5F89    ; Print objects on playing field 
+ $6AFF CALL $6478    ; Play the "exploding" sound
+ $6B02 POP AF        ;
+ $6B03 POP DE        ;
+ $6B04 POP HL        ;
+ $6B05 POP BC        ;
+ $6B06 INC C         ;
+ $6B07 INC C         ;
+ $6B08 AND A         ;
+ $6B09 SBC HL,DE     ;
+ $6B0B DEC HL        ;
+ $6B0C DJNZ $6AD4    ;
+*$6B0E PUSH HL       ;
+ $6B0F PUSH BC       ;
+ $6B10 PUSH DE       ;
+ $6B11 PUSH AF       ;
+ $6B12 OR (HL)       ;
+ $6B13 LD (HL),A     ;
+ $6B14 LD A,H        ;
+ $6B15 SUB $58       ;
+ $6B17 SLA A         ;
+ $6B19 SLA A         ;
+ $6B1B SLA A         ;
+ $6B1D ADD A,$40     ;
+ $6B1F LD H,A        ;
+ $6B20 LD B,$08      ;
+ $6B22 LD DE,($5DE2) ;
+*$6B26 LD A,(DE)     ;
+ $6B27 LD (HL),A     ;
+ $6B28 INC H         ;
+ $6B29 INC DE        ;
+ $6B2A DJNZ $6B26    ;
+ $6B2C LD ($5DE2),DE ;
+ $6B30 CALL $6478    ; Play the "exploding bike" sound
+ $6B33 POP AF        ;
+ $6B34 POP DE        ;
+ $6B35 POP BC        ;
+ $6B36 POP HL        ;
+ $6B37 RET           ;
+
+; "DAY   PATROL"
+t$6B38 DEFM "DAY   PATROL"
+
+; "NIGHT PATROL"
+t$6B44 DEFM "NIGHT PATROL"
+
+; " 1 = KEYBOARD "
+t$6B50 DEFM " 1=KEYBOARD "
+
+; " 2 = KEMPSTON "
+t$6B5C DEFM " 2=KEMPSTON "
+
+; "GAME OVER"
+t$6B68 DEFM "GAME OVER"
+
+; Print that the game is over
+;
+; Used by the routine at #R$6711.
+c$6B71 CALL $5F89    ; Redraw the screen
+ $6B74 LD DE,$6B68   ; "GAME OVER"
+ $6B77 LD HL,$48AB   ;
+ $6B7A LD B,$09      ;
+ $6B7C CALL $6949    ;
+
+; Play a descending sound
+;
+; Used by the routines at #R$657F and #R$6B96.
+c$6B7F EX AF,AF'     ; Swap out A
+ $6B80 LD D,$FF      ; Length of sound
+ $6B82 LD E,$1E      ; Initial length
+*$6B84 LD H,$06      ; Initial frequency
+*$6B86 XOR $10       ; Toggle the speaker on / off
+ $6B88 OUT ($FE),A   ;
+ $6B8A LD B,E        ; Hold in that position for E frames
+*$6B8B DJNZ $6B8B    ;
+ $6B8D DEC H         ; Decrease frequency and repeat
+ $6B8E JR NZ,$6B86   ;
+ $6B90 INC E         ; Decrease frequency and length
+ $6B91 DEC D         ;
+ $6B92 JR NZ,$6B84   ;
+ $6B94 EX AF,AF'     ; Swap back in A
+ $6B95 RET           ;
+
+; Save the game to tape if bit 0 in 5DEB is reset and P is held down, then S is
+; pressed
+;
+; Used by the routine at #R$657F.
+;
+;.
+;
+; This routine saves the state of the execution of the game's main BASIC,
+; which is used immediately after the loading routine is executed. The RET
+; at the end returns to BASIC, which is positioned at a "GOTO 1" statement
+; that re-runs a program. The loading system picks up the system variables
+; to match this state, which allows the game to start when it's loaded.
+c$6B96 EX AF,AF'     ;
+ $6B97 LD A,$03      ;
+ $6B99 EX AF,AF'     ;
+ $6B9A POP HL        ;
+ $6B9B CALL $60AA    ; Play an ascending sound
+ $6B9E CALL $6B7F    ; Play a descending sound
+ $6BA1 LD A,$FE      ; Check that "Z" is held down
+ $6BA3 IN A,($FE)    ;
+ $6BA5 BIT 1,A       ;
+ $6BA7 JR Z,$6BAE    ; Jump forward if so
+ $6BA9 LD A,$01      ; Unset "save game to tape" flag
+ $6BAB LD ($5DEB),A  ;
+*$6BAE LD A,$DF      ; Check that "P" is held down
+ $6BB0 IN A,($FE)    ;
+ $6BB2 BIT 0,A       ;
+ $6BB4 RET NZ        ;
+*$6BB5 LD A,$FD      ; { Wait for "S" to be pressed
+ $6BB7 IN A,($FE)    ;
+ $6BB9 BIT 1,A       ;
+ $6BBB JR NZ,$6BB5   ; }
+ $6BBD LD A,$FF      ; Flag for headerless data block
+ $6BBF LD IX,$4000   ; Start address
+ $6BC3 LD DE,$3F48   ; Length
+ $6BC6 CALL $04C2    ; SA-BYTES
+ $6BC9 RET           ; Exit to BASIC.
+
+; ":$:000000"
+t$6BCA DEFM ":$:000000"
+
+; ":HI:000000"
+t$6BD3 DEFM ":HI:000000"
+
+; Update the highest score to the last score if it is greater
+;
+; Used by the routine at #R$65B3.
+c$6BDD LD HL,$6BCD   ; Last score
+ $6BE0 LD DE,$6BD7   ; High score
+ $6BE3 LD B,$06      ;
+*$6BE5 LD A,(DE)     ; Get the next high score digit
+ $6BE6 LD C,(HL)     ; Do the same for last score
+ $6BE7 CP C          ; Is it higher?
+ $6BE8 JR C,$6BF0    ; Jump if so
+ $6BEA RET NZ        ; Return if it's lower
+ $6BEB INC HL        ; If it's the same
+ $6BEC INC DE        ; then check the next digit
+ $6BED DJNZ $6BE5    ; until there's a match
+ $6BEF RET           ;
+*$6BF0 LD BC,$0006   ; Replace the old high score
+ $6BF3 LD HL,$6BCD   ; with the new one
+ $6BF6 LD DE,$6BD7   ; 
+ $6BF9 LDIR          ;
+ $6BFB RET           ;
+
+; Print the high score
+;
+; Used by the routines at #R$65B3 and #R$6918.
+c$6BFC LD DE,$6BD4   ;
+ $6BFF LD HL,$50B6   ;
+ $6C02 LD B,$09      ;
+ $6C04 JP $6949      ;
+
+; Tank graphic
+b$6C07 DEFB $07,$0F,$1F,$07,$7F,$E0,$7F,$1C ; { #UDG$6C07,47#UDG$6C0F,47
+ $6C0F DEFB $80,$FF,$80,$00,$FF,$07,$FC,$70 ; }
+
+; Signal bonus
+;
+; Used by the routine at #R$6074.
+c$6C17 CALL $6C3A    ; Print bonus message
+ $6C1A LD B,$0F      ;
+*$6C1C PUSH BC       ;
+ $6C1D CALL $6989    ; Print current score
+ $6C20 EX AF,AF'     ; Play a bonus sound
+ $6C21 LD D,$3C      ;
+ $6C23 LD E,$0A      ;
+*$6C25 LD H,$09      ;
+*$6C27 XOR $10       ;
+ $6C29 OUT ($FE),A   ;
+ $6C2B LD B,E        ;
+*$6C2C DJNZ $6C2C    ;
+ $6C2E DEC H         ;
+ $6C2F JR NZ,$6C27   ;
+ $6C31 DEC E         ;
+ $6C32 DEC D         ;
+ $6C33 JR NZ,$6C25   ;
+ $6C35 EX AF,AF'     ;
+ $6C36 POP BC        ;
+ $6C37 DJNZ $6C1C    ;
+ $6C39 RET           ;
+
+; Print bonus message
+;
+; Used by the routine at #R$6C17.
+c$6C3A LD DE,$6C50   ; "BONUS!"
+ $6C3D LD HL,$596D   ; Flash display area
+ $6C40 LD B,$06      ;
+*$6C42 LD (HL),$C7   ;
+ $6C44 INC HL        ; 
+ $6C45 DJNZ $6C42    ;
+ $6C47 LD HL,$486D   ;
+ $6C4A LD B,$06      ;
+ $6C4C CALL $6949    ;
+ $6C4F RET           ;
+
+; "BONUS!"
+t$6C50 DEFM "BONUS!"
+
+; "(c) MERVYN ESTCOURT 1983"
+t$6C56 DEFB $7F
+ $6C57 DEFM " MERVYN ESTCOURT 1983"
+
+; Empty space
+i$6C6C
+
+; Offsets for tree graphics (not used)
+u$6D6A DEFB $00,$E8,$72
+ $6D6D DEFB $00,$E8,$72
+ $6D70 DEFB $00,$2C,$74
+
+; Offsets for tree graphics
+b$6D73 DEFB $00		; The largest tree is drawn twice
+ $6D74 DEFW $7246
+ $6D76 DEFB $00
+ $6D77 DEFW $7246
+ $6D79 DEFB $00
+ $6D7A DEFW $738A
+ $6D7C DEFB $00
+ $6D7D DEFW $74CE
+ $6D7F DEFB $00
+ $6D80 DEFW $7570
+ $6D82 DEFB $00
+ $6D83 DEFW $7612
+ $6D85 DEFB $00
+ $6D86 DEFW $76B4
+ $6D88 DEFB $00
+ $6D89 DEFW $7756
+ $6D8B DEFB $00
+ $6D8C DEFW $77F8
+;Small trees
+ $6D8E DEFB $01
+ $6D8F DEFW $789A
+ $6D91 DEFB $01
+ $6D92 DEFW $78D0
+ $6D94 DEFB $01
+ $6D95 DEFW $7906
+ $6D97 DEFB $01
+ $6D98 DEFW $793C
+ $6D9A DEFB $01
+ $6D9B DEFW $7972
+ $6D9D DEFB $01
+ $6D9E DEFW $79A8
+ $6DA0 DEFB $01
+ $6DA1 DEFW $79DE
+ $6DA3 DEFB $01
+ $6DA4 DEFW $7A14
+ $6DA6 DEFB $01
+ $6DA7 DEFW $7A4A
+ $6DA9 DEFB $01
+ $6DAA DEFW $7A80
+ $6DAC DEFB $01
+ $6DAD DEFW $7AB6
+ $6DAF DEFB $01
+ $6DB0 DEFW $7AEC
+ $6DB2 DEFB $01
+ $6DB3 DEFW $7B22
+ $6DB5 DEFB $01
+ $6DB6 DEFW $7B58
+ $6DB8 DEFB $01
+ $6DB9 DEFW $7B8E
+ $6DBB DEFB $01
+ $6DBC DEFW $7BC4
+ $6DBE DEFB $00		; End of buffer
+
+; Bottom display graphic
+;
+;.
+;#TABLE
+;{ #UDG$6DBF,$7B,2,$20#UDG$6DC0,$7B,2,$20#UDG$6DC1,$7B,2,$20#UDG$6DC2,$7B,2,$20#UDG$6DC3,$7B,2,$20#UDG$6DC4,$7B,2,$20#UDG$6DC5,$7B,2,$20#UDG$6DC6,$7B,2,$20#UDG$6DC7,$7B,2,$20#UDG$6DC8,$7B,2,$20#UDG$6DC9,$7B,2,$20#UDG$6DCA,$7B,2,$20#UDG$6DCB,$20,2,$20#UDG$6DCC,$38,2,$20#UDG$6DCD,$20,2,$20#UDG$6DCE,$4F,2,$20#UDG$6DCF,$4F,2,$20#UDG$6DD0,$4F,2,$20#UDG$6DD1,$20,2,$20#UDG$6DD2,$20,2,$20#UDG$6DD3,$20,2,$20#UDG$6DD4,$7B,2,$20#UDG$6DD5,$7B,2,$20#UDG$6DD6,$7B,2,$20#UDG$6DD7,$7B,2,$20#UDG$6DD8,$7B,2,$20#UDG$6DD9,$7B,2,$20#UDG$6DDA,$7B,2,$20#UDG$6DDB,$7B,2,$20#UDG$6DDC,$7B,2,$20#UDG$6DDD,$7B,2,$20#UDG$6DDE,$7B,2,$20 }
+;{ #UDG$6EBF,$7B,2,$20#UDG$6EC0,$78,2,$20#UDG$6EC1,$78,2,$20#UDG$6EC2,$78,2,$20#UDG$6EC3,$78,2,$20#UDG$6EC4,$78,2,$20#UDG$6EC5,$78,2,$20#UDG$6EC6,$78,2,$20#UDG$6EC7,$78,2,$20#UDG$6EC8,$78,2,$20#UDG$6EC9,$78,2,$20#UDG$6ECA,$7B,2,$20#UDG$6ECB,$38,2,$20#UDG$6ECC,$38,2,$20#UDG$6ECD,$20,2,$20#UDG$6ECE,$4F,2,$20#UDG$6ECF,$4F,2,$20#UDG$6ED0,$4F,2,$20#UDG$6ED1,$21,2,$20#UDG$6ED2,$20,2,$20#UDG$6ED3,$20,2,$20#UDG$6ED4,$7B,2,$20#UDG$6ED5,$78,2,$20#UDG$6ED6,$78,2,$20#UDG$6ED7,$78,2,$20#UDG$6ED8,$78,2,$20#UDG$6ED9,$78,2,$20#UDG$6EDA,$78,2,$20#UDG$6EDB,$78,2,$20#UDG$6EDC,$78,2,$20#UDG$6EDD,$78,2,$20#UDG$6EDE,$7B,2,$20 }
+;TABLE#
+;.
+;
+;
+; First row
+b$6DBF DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ; 
+ $6DC7 DEFB $FF,$FF,$FF,$FF,$01,$FF,$F4,$3C ; 
+ $6DCF DEFB $00,$7C,$17,$FF,$00,$FF,$FF,$FF ; 
+ $6DD7 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ; 
+ $6DDF DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ; 
+ $6DE7 DEFB $FF,$FF,$FF,$FF,$03,$FF,$FC,$20 ;
+ $6DEF DEFB $00,$04,$17,$FF,$80,$FF,$FF,$FF ;
+ $6DF7 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $6DFF DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $6E07 DEFB $FF,$FF,$FF,$FF,$07,$FF,$F8,$60 ;
+ $6E0F DEFB $00,$02,$1F,$FF,$80,$FF,$FF,$FF ;
+ $6E17 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $6E1F DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $6E27 DEFB $FF,$FF,$FF,$FF,$07,$FF,$F8,$C0 ;
+ $6E2F DEFB $00,$02,$0F,$FF,$C0,$FF,$FF,$FF ;
+ $6E37 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $6E3F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6E47 DEFB $00,$00,$00,$0F,$0F,$FF,$F8,$C0 ;
+ $6E4F DEFB $00,$01,$0F,$FF,$C0,$F8,$00,$00 ;
+ $6E57 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6E5F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6E67 DEFB $00,$00,$00,$0F,$1F,$FF,$F8,$C7 ;
+ $6E6F DEFB $00,$E1,$0F,$FF,$E0,$F8,$00,$00 ;
+ $6E77 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6E7F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6E87 DEFB $00,$00,$00,$0F,$1F,$FF,$F9,$85 ;
+ $6E8F DEFB $00,$A1,$07,$FF,$E0,$F8,$00,$00 ;
+ $6E97 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6E9F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6EA7 DEFB $00,$00,$00,$0F,$3F,$FF,$F1,$89 ;
+ $6EAF DEFB $00,$90,$87,$FF,$F0,$F8,$00,$00 ;
+ $6EB7 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+;Second row
+ $6EBF DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6EC7 DEFB $00,$00,$00,$0F,$3F,$FF,$F3,$8A ;
+ $6ECF DEFB $00,$51,$87,$FF,$F0,$F8,$00,$00 ;
+ $6ED7 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6EDF DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6EE7 DEFB $00,$00,$00,$0F,$7F,$FF,$E3,$8A ;
+ $6EEF DEFB $00,$49,$C3,$FF,$F8,$F8,$00,$00 ;
+ $6EF7 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6EFF DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6F07 DEFB $00,$00,$00,$0F,$FF,$FF,$E7,$12 ;
+ $6F0F DEFB $00,$48,$C3,$FF,$F8,$F8,$00,$00 ;
+ $6F17 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6F1F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6F27 DEFB $00,$00,$00,$0F,$FF,$FF,$C7,$12 ;
+ $6F2F DEFB $00,$48,$41,$FF,$FC,$F8,$00,$00 ;
+ $6F37 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6F3F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6F47 DEFB $00,$00,$00,$0F,$FF,$FF,$C7,$12 ;
+ $6F4F DEFB $00,$44,$61,$FF,$FC,$F8,$00,$00 ;
+ $6F57 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6F5F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6F67 DEFB $00,$00,$00,$0F,$FF,$FF,$8E,$14 ;
+ $6F6F DEFB $00,$24,$61,$FF,$FE,$F8,$00,$00 ;
+ $6F77 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6F7F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6F87 DEFB $00,$00,$00,$0F,$FF,$FF,$9C,$24 ;
+ $6F8F DEFB $00,$22,$70,$FF,$FE,$F8,$00,$00 ;
+ $6F97 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+ $6F9F DEFB $E0,$00,$00,$00,$00,$00,$00,$00 ;
+ $6FA7 DEFB $00,$00,$00,$0F,$FF,$FF,$14,$20 ;
+ $6FAF DEFB $00,$02,$71,$FF,$FF,$F8,$00,$00 ;
+ $6FB7 DEFB $00,$00,$00,$00,$00,$00,$00,$0F ;
+; First row attributes
+ $6FBF DEFB $7B,$7B,$7B,$7B,$7B,$7B,$7B,$7B
+ $6FC7 DEFB $7B,$7B,$7B,$7B,$20,$38,$20,$4F
+ $6FCF DEFB $4F,$4F,$20,$20,$20,$7B,$7B,$7B
+ $6FD7 DEFB $7B,$7B,$7B,$7B,$7B,$7B,$7B,$7B
+; Second row attributes
+ $6FDF DEFB $7B,$78,$78,$78,$78,$78,$78,$78
+ $6FE7 DEFB $78,$78,$78,$7B,$38,$38,$20,$4F
+ $6FEF DEFB $4F,$4F,$21,$20,$20,$7B,$78,$78
+ $6FF7 DEFB $78,$78,$78,$78,$78,$78,$78,$7B
+
+; Spare
+i$6FFF DEFB $00
+
+; Handlebar graphic - forward
+;
+;.
+;#TABLE
+;{ #UDG$7000,$20,2,7#UDG$7001,$20,2,7#UDG$7002,$27,2,7#UDG$7003,$27,2,7#UDG$7004,$27,2,7#UDG$7005,$20,2,7#UDG$7006,$20,2,7 }
+;{ #UDG$703F,$20,2,7#UDG$7040,$20,2,7#UDG$7041,$27,2,7#UDG$7042,$27,2,7#UDG$7043,$27,2,7#UDG$7044,$20,2,7#UDG$7045,$20,2,7 }
+;TABLE#
+;.
+; Line 1
+b$7000 DEFB $00,$00,$00,$3C,$00,$00,$00,$00 ; 
+ $7008 DEFB $00,$00,$FF,$00,$00,$00,$00,$00 ;
+ $7010 DEFB $01,$FF,$80,$00,$00,$03,$E0,$03 ;
+ $7018 DEFB $EF,$C0,$07,$E0,$0F,$FC,$03,$EF ;
+ $7020 DEFB $C0,$1F,$F0,$3F,$FF,$07,$EF,$E0 ;
+ $7028 DEFB $7F,$FC,$FF,$FF,$9F,$EF,$F1,$FF ;
+ $7030 DEFB $FF,$FF,$FF,$CF,$EF,$FB,$FF,$FF ; 
+; Line 1 attributes
+ $7038 DEFB $20,$20,$27,$27,$27,$20,$20
+; Line 2
+ $703F DEFB $FF,$FF,$E7,$FF,$CF,$FF,$FF,$FF ; 
+ $7047 DEFB $FF,$F0,$10,$1F,$FF,$FF,$FF,$FF ;
+ $704F DEFB $F8,$00,$3F,$FF,$FF,$29,$7F,$FD ;
+ $7057 DEFB $BB,$7F,$FF,$D7,$2F,$3F,$FD,$BB ;
+ $705F DEFB $7F,$FF,$52,$7F,$BE,$7D,$BB,$7F ;
+ $7067 DEFB $7E,$7E,$FF,$CE,$3D,$BB,$7E,$3B ;
+ $706F DEFB $FE,$FF,$F4,$1D,$81,$7C,$13,$FF ; 
+; Line 2 attributes
+ $7077 DEFB $20,$20,$27,$27,$27,$20,$20
+
+; Handlebar graphic - right
+;
+;.
+;#TABLE
+;{ #UDG$707E,$20,2,7#UDG$707F,$20,2,7#UDG$7080,$27,2,7#UDG$7081,$27,2,7#UDG$7082,$27,2,7#UDG$7083,$20,2,7#UDG$7084,$20,2,7 }
+;{ #UDG$70BD,$20,2,7#UDG$70BE,$20,2,7#UDG$70BF,$67,2,7#UDG$70C0,$27,2,7#UDG$70C1,$27,2,7#UDG$70C2,$20,2,7#UDG$70C3,$20,2,7 }
+;TABLE#
+;.
+; Line 1
+b$707E DEFB $07,$E0,$00,$00,$00,$00,$00,$0F ; 
+ $7086 DEFB $F8,$00,$03,$A0,$00,$00,$3F,$FC ; 
+ $708E DEFB $00,$1F,$30,$00,$00,$7F,$FF,$00 ; 
+ $7096 DEFB $3E,$70,$00,$00,$7F,$FF,$00,$7E ; 
+ $709E DEFB $F0,$00,$00,$FF,$FF,$40,$FC,$F8 ; 
+ $70A6 DEFB $00,$00,$FF,$FF,$E1,$F9,$F8,$00 ; 
+ $70AE DEFB $00,$70,$7F,$F3,$FB,$F8,$0F,$E0 ;
+; Line 1 attributes
+ $70B6 DEFB $20,$20,$27,$27,$27,$20,$20
+; Line 2
+ $70BD DEFB $4F,$3F,$E3,$FF,$FC,$1F,$F0,$1F ; 
+ $70C5 DEFB $8F,$F0,$FF,$FC,$5F,$F8,$7F,$E7 ;
+ $70CD DEFB $F8,$1F,$FE,$7F,$FC,$7F,$F6,$7E ;
+ $70D5 DEFB $01,$F8,$7F,$FF,$7F,$F6,$3F,$80 ;
+ $70DD DEFB $63,$FF,$FF,$FF,$F6,$0D,$D3,$0F ;
+ $70E5 DEFB $FF,$FF,$FF,$FE,$05,$87,$7F,$FF ;
+ $70ED DEFB $FF,$FF,$F4,$05,$AF,$FF,$FF,$FF ;
+; Line 2 attributes
+ $70F5 DEFB $20,$20,$67,$27,$27,$20,$20
+
+; Handlebar graphic - left
+;
+;.
+;#TABLE
+;{ #UDG$70FC,$20,2,7#UDG$70FD,$20,2,7#UDG$70FE,$27,2,7#UDG$70FF,$27,2,7#UDG$7100,$27,2,7#UDG$7101,$20,2,7#UDG$7102,$20,2,7 }
+;{ #UDG$713B,$20,2,7#UDG$713C,$20,2,7#UDG$713D,$27,2,7#UDG$713E,$27,2,7#UDG$713F,$67,2,7#UDG$7140,$20,2,7#UDG$7141,$20,2,7 }
+;TABLE#
+;.
+; Line 1
+b$70FC DEFB $00,$00,$00,$00,$00,$07,$E0,$00 ;
+ $7104 DEFB $00,$05,$C0,$00,$1F,$F0,$00,$00 ; 
+ $710C DEFB $0C,$F8,$00,$3F,$FC,$00,$00,$0E ;
+ $7114 DEFB $7C,$00,$FF,$FE,$00,$00,$0F,$7E ;
+ $711C DEFB $00,$FF,$FE,$00,$00,$1F,$3F,$02 ;
+ $7124 DEFB $FF,$FF,$00,$00,$1F,$9F,$87,$FF ;
+ $712C DEFB $FF,$07,$F0,$1F,$DF,$CF,$FE,$0E ;
+; Line 1 attributes
+ $7134 DEFB $20,$20,$27,$27,$27,$20,$20
+; Line 2
+ $713B DEFB $0F,$F8,$3F,$FF,$C7,$FC,$F2,$1F ;
+ $7143 DEFB $FA,$3F,$FF,$0F,$F1,$F8,$3F,$FE ;
+ $714B DEFB $7F,$F8,$1F,$E7,$FE,$FF,$FE,$1F ;
+ $7153 DEFB $80,$7E,$6F,$FE,$FF,$FF,$C6,$01 ;
+ $715B DEFB $FC,$6F,$FE,$FF,$FF,$F0,$CB,$B0 ;
+ $7163 DEFB $6F,$FF,$FF,$FF,$FE,$E1,$A0,$7F ;
+ $716B DEFB $FF,$FF,$FF,$FF,$F5,$A0,$2F,$FF ;
+; Line 2 attributes
+ $7173 DEFB $20,$20,$27,$27,$67,$20,$20
+
+; Data (not used?)
+u$717A DEFB $77,$F7,$BF,$FF,$77,$77,$77,$F7
+ $7182 DEFB $77,$76
+
+; Enemy graphic - far left
+b$7184 DEFB $00,$30,$10,$78,$3C,$7E,$6E,$24 ; #UDG$7184,41
+ 
+; Enemy graphic - far centre
+b$718C DEFB $00,$00,$18,$18,$3C,$18,$18,$18 ; #UDG$718C,41
+
+; Enemy graphic - far right
+b$7194 DEFB $00,$0C,$08,$1E,$3C,$7E,$76,$24 ; #UDG$7194,41
+
+; Enemy graphic - medium left
+b$719C DEFB $18,$18,$7C,$3E,$3F,$2D,$27,$02 ; #UDG$719C,41
+
+; Enemy graphic - medium centre
+b$71A4 DEFB $18,$3C,$FF,$3C,$18,$18,$18,$18 ; #UDG$71A4,41
+
+; Enemy graphic - medium right
+b$71AC DEFB $18,$18,$3E,$7C,$FC,$B4,$E4,$40 ; #UDG$71AC,41
+
+; Enemy graphic - near left
+b$71B4 DEFB $60,$70,$F8,$FC,$78,$7C,$3C,$1C ; #UDG$71B4,41
+ $71BC DEFB $0C,$06,$04,$00,$00,$00,$00,$00 ; #UDG$71BC,41
+
+; Enemy graphic - near centre
+b$71C4 DEFB $18,$18,$3C,$3C,$FF,$3C,$3C,$18 ; #UDG$71C4,41
+ $71CC DEFB $18,$18,$18,$00,$00,$00,$00,$00 ; #UDG$71CC,41
+
+; Enemy graphic - near right
+b$71D4 DEFB $06,$0E,$1F,$3F,$1F,$3E,$1E,$3E ; #UDG$71D4,41
+ $71DC DEFB $1C,$18,$30,$00,$00,$00,$00,$00 ; #UDG$71DC,41
+
+; Enemy graphic - in range left
+b$71E4 DEFB $60,$70,$78,$FE,$FE,$FD,$FE,$FE ; #UDG$71E4,41
+ $71EC DEFB $7E,$7E,$FF,$7E,$1E,$06,$07,$03 ; #UDG$71EC,41
+
+; Enemy graphic - in range centre
+b$71F4 DEFB $18,$18,$3C,$7E,$7E,$FF,$7E,$7E ; #UDG$71F4,41
+ $71FC DEFB $7E,$7E,$3C,$7E,$18,$18,$18,$18 ; #UDG$71FC,41
+
+; Enemy graphic - in range right
+b$7204 DEFB $06,$06,$1E,$3F,$7F,$3F,$7F,$7F ; #UDG$7204,41
+ $720C DEFB $7E,$7E,$FF,$7E,$78,$60,$E0,$C0 ; #UDG$720C,41
+
+; Photon bolt graphic
+b$7214 DEFB $7C,$FF,$C3,$C3,$C3,$C3,$E7,$7E ; #UDG$7214,39
+ $721C DEFB $3C,$7E,$7E,$FF,$7E,$7E,$AA,$55 ; #UDG$721C,39
+ $7224 DEFB $1C,$3E,$7E,$7E,$52,$AD,$56,$18 ; #UDG$7224,39
+ $722C DEFB $3C,$3C,$18,$2A,$55,$5A,$AD,$18 ; #UDG$722C,39
+ $7234 DEFB $18,$3C,$3C,$18,$2A,$54,$2A,$18 ; #UDG$7234,39
+ $723C DEFB $18,$3C,$55,$AA,$55,$28,$54,$00 ; #UDG$723C,39
+
+; Empty space
+i$7244 DEFB $00,$00
+
+; Tree (huge)
+b$7246 DEFB $2B                             ; { #TABLE(default)
+ $7247 DEFB $92,$55,$A9,$56,$DD,$DD,$DD,$DD ;{ #UDG$7247,$2B#UDG$72E9,$2A }
+ $724F DEFB $2B                             ;{ #UDG$7250,$2B#UDG$72F2,$2A }
+ $7250 DEFB $DD,$DD,$FD,$FD,$FD,$FD,$FD,$FF ;{ #UDG$7259,$2B#UDG$72FB,$2A }
+ $7258 DEFB $2B                             ;{ #UDG$7262,$2B#UDG$7304,$2A }
+ $7259 DEFB $FF,$FF,$FF,$FF,$DF,$DF,$DD,$DD ;{ #UDG$726B,$2B#UDG$730D,$2A }
+ $7261 DEFB $2B                             ;{ #UDG$7274,$2B#UDG$7316,$2A }
+ $7262 DEFB $DD,$DD,$DD,$DD,$DD,$FD,$FD,$FD ;{ #UDG$727D,$2B#UDG$731F,$2A }
+ $726A DEFB $2B                             ;{ #UDG$7286,$2B#UDG$7328,$2A }
+ $726B DEFB $FD,$FD,$FD,$FD,$FD,$FD,$FD,$DF ;{ #UDG$728F,$2B#UDG$7331,$2A }
+ $7273 DEFB $2B                             ;{ #UDG$7298,$2B#UDG$733A,$2A }
+ $7274 DEFB $DF,$DF,$DF,$DF,$DF,$DF,$DD,$DD ;{ #UDG$72A1,$23#UDG$7343,$22 }
+ $727C DEFB $2B                             ;{ #UDG$72AA,$23#UDG$734C,$22 }
+ $727D DEFB $FD,$FD,$FD,$FD,$FD,$FD,$FD,$FD ;{ #UDG$72B3,$23#UDG$7355,$22 }
+ $7285 DEFB $2B                             ;{ #UDG$72BC,$23#UDG$735E,$22 }
+ $7286 DEFB $FF,$FF,$DF,$DF,$DF,$DF,$DF,$DF ;{ #UDG$72C5,$23#UDG$7367,$22 }
+ $728E DEFB $2B                             ;{ #UDG$72CE,$23#UDG$7370,$22 }
+ $728F DEFB $DF,$DD,$FD,$FF,$FF,$FF,$FF,$FF ;{ #UDG$72D7,$23#UDG$7379,$22 }
+ $7297 DEFB $2B                             ;{ #UDG$72E0,$23#UDG$7382,$22 }
+ $7298 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;TABLE#
+ $72A0 DEFB $23                             ;
+ $72A1 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FD,$FD ;
+ $72A9 DEFB $23                             ;
+ $72AA DEFB $ED,$ED,$ED,$ED,$ED,$EF,$EF,$EF ;
+ $72B2 DEFB $23                             ;
+ $72B3 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $72BB DEFB $23                             ;
+ $72BC DEFB $FF,$FF,$EF,$EF,$EF,$EF,$EF,$EF ;
+ $72C4 DEFB $23                             ;
+ $72C5 DEFB $EF,$EE,$EE,$EE,$EE,$EE,$FE,$FE ;
+ $72CD DEFB $23                             ;
+ $72CE DEFB $FE,$FE,$FE,$FE,$FE,$FF,$FF,$FF ;
+ $72D6 DEFB $23                             ;
+ $72D7 DEFB $FF,$EF,$EF,$EF,$EF,$EF,$EF,$EF ;
+ $72DF DEFB $23                             ;
+ $72E0 DEFB $EF,$FB,$FB,$FB,$FB,$FB,$FB,$7B ;
+ $72E8 DEFB $2A                             ;
+ $72E9 DEFB $DB,$DB,$DB,$DB,$DB,$DB,$DB,$DB ;
+ $72F1 DEFB $2A                             ;
+ $72F2 DEFB $DB,$DF,$DF,$DF,$DF,$DF,$DF,$DF ;
+ $72FA DEFB $2A                             ;
+ $72FB DEFB $DF,$DB,$DB,$DB,$FB,$FB,$FB,$FB ;
+ $7303 DEFB $2A                             ;
+ $7304 DEFB $FB,$FB,$FF,$DF,$DF,$DF,$DF,$DF ;
+ $730C DEFB $2A                             ;
+ $730D DEFB $DF,$DB,$DB,$DB,$DB,$DB,$DB,$FB ;
+ $7315 DEFB $2A                             ;
+ $7316 DEFB $FB,$FB,$FB,$FB,$FF,$FF,$FF,$DF ;
+ $731E DEFB $2A                             ;
+ $731F DEFB $DF,$DF,$DF,$DF,$DB,$DB,$DB,$DB ;
+ $7327 DEFB $2A                             ;
+ $7328 DEFB $DB,$DB,$DB,$DB,$DF,$DF,$DF,$DF ;
+ $7330 DEFB $2A                             ;
+ $7331 DEFB $DF,$DF,$DF,$FF,$FF,$FF,$FF,$FF ;
+ $7339 DEFB $2A                             ;
+ $733A DEFB $FF,$FB,$FB,$7B,$7B,$7F,$FF,$FF ;
+ $7342 DEFB $22                             ;
+ $7343 DEFB $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF ;
+ $734B DEFB $22                             ;
+ $734C DEFB $FF,$FF,$FF,$DF,$DF,$DF,$DF,$DF ;
+ $7354 DEFB $22                             ;
+ $7355 DEFB $D7,$D7,$D7,$F7,$F7,$F7,$F7,$F7 ;
+ $735D DEFB $22                             ;
+ $735E DEFB $F7,$F7,$F7,$F7,$F7,$F7,$F7,$D7 ;
+ $7366 DEFB $22                             ;
+ $7367 DEFB $D7,$D7,$D7,$D7,$D7,$D7,$D7,$D7 ;
+ $736F DEFB $22                             ;
+ $7370 DEFB $DD,$DD,$DD,$DD,$DF,$DF,$DF,$DF ;
+ $7378 DEFB $22                             ;
+ $7379 DEFB $DF,$DF,$DF,$DF,$DF,$DF,$DF,$DF ;
+ $7381 DEFB $22                             ;
+ $7382 DEFB $DF,$DF,$DF,$DF,$DF,$DF,$DF,$DF ; }
+                             
+; Tree (huge)
+b$738A DEFB $2B                             ;  { #TABLE(default)
+ $738B DEFB $1F,$1F,$1F,$1F,$1F,$1E,$1E,$1E ; { #UDG$738B,$2B#UDG$742D,$2A }
+ $7393 DEFB $2B                             ; { #UDG$7394,$2B#UDG$7436,$2A }
+ $7394 DEFB $1E,$1E,$1E,$0E,$0E,$0F,$0F,$0F ; { #UDG$739D,$2B#UDG$743F,$2A }
+ $739C DEFB $2B                             ; { #UDG$73A6,$2B#UDG$7448,$2A }
+ $739D DEFB $0F,$0F,$0F,$0F,$0F,$0E,$0E,$0E ; { #UDG$73AF,$2B#UDG$7451,$2A }
+ $73A5 DEFB $2B                             ; { #UDG$73B8,$2B#UDG$745A,$2A }
+ $73A6 DEFB $0E,$0E,$0E,$0F,$0F,$0F,$0F,$0F ; { #UDG$73C1,$2B#UDG$7463,$2A }
+ $73AE DEFB $2B                             ; { #UDG$73CA,$2B#UDG$746C,$2A }
+ $73AF DEFB $0F,$0F,$0F,$0F,$0E,$0E,$0E,$0E ; { #UDG$73D3,$2B#UDG$7475,$2A }
+ $73B7 DEFB $2B                             ; { #UDG$73DC,$2B#UDG$747E,$2A }
+ $73B8 DEFB $0E,$1E,$1E,$1F,$1F,$1F,$1F,$1F ; { #UDG$73E5,$23#UDG$7487,$22 }
+ $73C0 DEFB $2B                             ; { #UDG$73EE,$23#UDG$7490,$22 }
+ $73C1 DEFB $1F,$1F,$1F,$1F,$1E,$1E,$1E,$1E ; { #UDG$73F7,$23#UDG$7499,$22 }
+ $73C9 DEFB $2B                             ; { #UDG$7400,$23#UDG$74A2,$22 }
+ $73CA DEFB $1E,$1E,$1E,$1E,$1E,$1E,$1E,$1F ; { #UDG$7409,$23#UDG$74AB,$22 }
+ $73D2 DEFB $2B                             ; { #UDG$7412,$23#UDG$74B4,$22 }
+ $73D3 DEFB $1F,$1F,$1F,$1F,$1E,$1F,$1F,$1F ; { #UDG$741B,$23#UDG$74BD,$22 }
+ $73DB DEFB $2B                             ; { #UDG$7424,$20#UDG$74C6,$20 }
+ $73DC DEFB $1F,$1F,$1F,$1F,$1F,$1F,$1F,$1F ;TABLE#
+ $73E4 DEFB $23                             ;
+ $73E5 DEFB $1F,$1F,$1F,$1F,$1F,$1E,$1E,$1E ;
+ $73ED DEFB $23                             ;
+ $73EE DEFB $1F,$1F,$1F,$1F,$1F,$1D,$1D,$1D ;
+ $73F6 DEFB $23                             ;
+ $73F7 DEFB $1D,$1D,$1D,$1D,$1D,$1D,$1F,$1F ;
+ $73FF DEFB $23                             ;
+ $7400 DEFB $1D,$1D,$1D,$1F,$1F,$1F,$1F,$1F ;
+ $7408 DEFB $23                             ;
+ $7409 DEFB $1F,$1F,$1D,$1D,$1D,$1F,$1D,$1D ;
+ $7411 DEFB $23                             ;
+ $7412 DEFB $1D,$1D,$1D,$1D,$1D,$1D,$1D,$1F ;
+ $741A DEFB $23                             ;
+ $741B DEFB $1F,$1B,$1F,$0F,$0F,$07,$03,$00 ;
+ $7423 DEFB $20                             ;
+ $7424 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ;
+ $742C DEFB $2A                             ;
+ $742D DEFB $EC,$EC,$FC,$FC,$EC,$EC,$EC,$EC ;
+ $7435 DEFB $2A                             ;
+ $7436 DEFB $EC,$EC,$EC,$EC,$FC,$FC,$FC,$FC ;
+ $743E DEFB $2A                             ;
+ $743F DEFB $EC,$EC,$EC,$EC,$EC,$EC,$EC,$EE ;
+ $7447 DEFB $2A                             ;
+ $7448 DEFB $EE,$FE,$FE,$FE,$FE,$7E,$7E,$7E ;
+ $7450 DEFB $2A                             ;
+ $7451 DEFB $6E,$6E,$6E,$EC,$EC,$EC,$EC,$EC ;
+ $7459 DEFB $2A                             ;
+ $745A DEFB $EC,$EC,$FC,$FC,$7C,$7C,$7C,$7C ;
+ $7462 DEFB $2A                             ;
+ $7463 DEFB $7C,$6C,$EC,$EC,$EC,$EC,$EE,$EE ;
+ $746B DEFB $2A                             ;
+ $746C DEFB $EE,$FE,$FE,$FE,$FE,$FE,$FE,$EE ;
+ $7474 DEFB $2A                             ;
+ $7475 DEFB $EE,$AE,$AE,$AE,$EE,$EE,$EE,$EE ;
+ $747D DEFB $2A                             ;
+ $747E DEFB $EE,$FE,$FE,$FE,$FE,$FE,$FE,$FE ;
+ $7486 DEFB $22                             ;
+ $7487 DEFB $FE,$FE,$FE,$FE,$FE,$EE,$EE,$EE ;
+ $748F DEFB $22                             ;
+ $7490 DEFB $EE,$EE,$EE,$EE,$EE,$FE,$FE,$FE ;
+ $7498 DEFB $22                             ;
+ $7499 DEFB $FE,$FE,$FE,$FE,$EE,$6E,$6E,$6E ;
+ $74A1 DEFB $22                             ;
+ $74A2 DEFB $6E,$6E,$6E,$7E,$7E,$7E,$7E,$7E ;
+ $74AA DEFB $22                             ;
+ $74AB DEFB $FE,$FE,$FE,$FE,$EE,$EE,$EE,$EE ;
+ $74B3 DEFB $22                             ;
+ $74B4 DEFB $EE,$EE,$6E,$6E,$6E,$EE,$EE,$EE ;
+ $74BC DEFB $22                             ;
+ $74BD DEFB $EE,$EE,$FE,$FE,$FC,$F8,$F0,$00 ;
+ $74C5 DEFB $20                             ;
+ $74C6 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$74CE DEFB $2B                             ; { #UDG$74CF,$2B
+ $74CF DEFB $6F,$6F,$6B,$7B,$7B,$7B,$7B,$7B ; }
+ $74D7 DEFB $2A                             ; { #UDG$74D8,$2A
+ $74D8 DEFB $7B,$7B,$7B,$7F,$6F,$6F,$6F,$6F ; }
+ $74E0 DEFB $2A                             ; { #UDG$74E1,$2A
+ $74E1 DEFB $6F,$6F,$7F,$7B,$7B,$7B,$7B,$7B ; }
+ $74E9 DEFB $2A                             ; { #UDG$74EA,$2A
+ $74EA DEFB $7B,$7B,$7B,$6B,$6B,$6F,$6F,$7F ; }
+ $74F2 DEFB $2A                             ; { #UDG$74F3,$2A
+ $74F3 DEFB $7F,$7F,$7F,$7F,$7F,$7F,$7F,$7B ; }
+ $74FB DEFB $2A                             ; { #UDG$74FC,$2A
+ $74FC DEFB $6B,$6B,$7B,$7B,$7B,$6B,$6B,$6B ; }
+ $7504 DEFB $2A                             ; { #UDG$7505,$2A
+ $7505 DEFB $7B,$7B,$7B,$7B,$7F,$7F,$6F,$6F ; }
+ $750D DEFB $2A                             ; { #UDG$750E,$2A
+ $750E DEFB $6F,$6F,$6F,$7F,$7F,$7F,$7F,$7F ; }
+ $7516 DEFB $2A                             ; { #UDG$7517,$2A
+ $7517 DEFB $7B,$6B,$6B,$6B,$7B,$7B,$7F,$7F ; }
+ $751F DEFB $2A                             ; { #UDG$7520,$2A 
+ $7520 DEFB $7F,$7F,$7F,$7F,$7F,$7F,$7F,$7F ; }
+ $7528 DEFB $22                             ; { #UDG$7529,$22
+ $7529 DEFB $7F,$7F,$7F,$6F,$6D,$6D,$7D,$7F ; }
+ $7531 DEFB $22                             ; { #UDG$7532,$22
+ $7532 DEFB $7F,$7F,$7B,$7B,$7B,$6B,$6B,$6B ; }
+ $753A DEFB $22                             ; { #UDG$753B,$22
+ $753B DEFB $7B,$7F,$7F,$7F,$7F,$77,$77,$77 ; }
+ $7543 DEFB $22                             ; { #UDG$7544,$22
+ $7544 DEFB $77,$77,$77,$77,$77,$77,$77,$77 ; }
+ $754C DEFB $22                             ; { #UDG$754D,$22
+ $754D DEFB $7F,$7F,$3C,$00,$00,$00,$00,$00 ; }
+ $7555 DEFB $20                             ; { #UDG$7556,$20
+ $7556 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $755E DEFB $20                             ; { #UDG$755F,$20
+ $755F DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7567 DEFB $20                             ; { #UDG$7568,$20
+ $7568 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$7570 DEFB $2C                             ; { #UDG$7571,$2C
+ $7571 DEFB $3E,$FE,$F7,$F7,$F7,$FF,$FF,$FF ; }
+ $7579 DEFB $2C                             ; { #UDG$757A,$2C
+ $757A DEFB $FF,$F7,$F7,$BB,$BB,$BB,$BB,$FF ; }
+ $7582 DEFB $2A                             ; { #UDG$7583,$2A
+ $7583 DEFB $36,$3E,$3E,$3A,$3A,$3A,$3E,$36 ; }
+ $758B DEFB $2A                             ; { #UDG$758C,$2A
+ $758C DEFB $36,$3E,$36,$3E,$3A,$3A,$3A,$3A ; }
+ $7594 DEFB $2A                             ; { #UDG$7595,$2A
+ $7595 DEFB $3A,$3A,$3E,$3E,$3E,$3E,$3E,$36 ; }
+ $759D DEFB $2A                             ; { #UDG$759E,$2A
+ $759E DEFB $36,$36,$36,$3E,$3A,$3A,$3A,$3A ; }
+ $75A6 DEFB $2A                             ; { #UDG$75A7,$2A
+ $75A7 DEFB $3A,$3E,$3E,$3E,$3A,$3A,$3A,$3E ; }
+ $75AF DEFB $2A                             ; { #UDG$75B0,$2A
+ $75B0 DEFB $36,$36,$36,$3E,$3E,$3E,$3E,$3E ; }
+ $75B8 DEFB $2A                             ; { #UDG$75B9,$2A
+ $75B9 DEFB $3E,$3E,$3A,$3A,$3E,$36,$3E,$3E ; }
+ $75C1 DEFB $2A                             ; { #UDG$75C2,$2A
+ $75C2 DEFB $3E,$3E,$3E,$3E,$3E,$3E,$3E,$3E ; }
+ $75CA DEFB $22                             ; { #UDG$75CB,$22
+ $75CB DEFB $3E,$3E,$36,$36,$36,$36,$36,$36 ; }
+ $75D3 DEFB $22                             ; { #UDG$75D4,$22
+ $75D4 DEFB $36,$3E,$3A,$3E,$3E,$36,$3E,$3A ; }
+ $75DC DEFB $22                             ; { #UDG$75DD,$22
+ $75DD DEFB $3A,$3A,$3A,$3E,$3E,$3E,$3E,$3E ; }
+ $75E5 DEFB $22                             ; { #UDG$75E6,$22
+ $75E6 DEFB $36,$1C,$00,$00,$00,$00,$00,$00 ; }
+ $75EE DEFB $22                             ; { #UDG$75EF,$20
+ $75EF DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $75F7 DEFB $20                             ; { #UDG$75F8,$20
+ $75F8 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7600 DEFB $20                             ; { #UDG$7601,$20
+ $7601 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7609 DEFB $20                             ; { #UDG$760A,$20
+ $760A DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$7612 DEFB $2C                             ; { #UDG$7613,$2C
+ $7613 DEFB $7B,$3F,$F7,$DF,$DB,$DB,$FF,$FF ; }
+ $761B DEFB $2C                             ; { #UDG$761C,$2C
+ $761C DEFB $BF,$FB,$DB,$DB,$DB,$DF,$DF,$DF ; }
+ $7624 DEFB $2C                             ; { #UDG$7625,$2C
+ $7625 DEFB $DF,$DF,$FF,$7B,$7B,$7F,$7A,$1E ; }
+ $762D DEFB $2A                             ; { #UDG$762E,$2A
+ $762E DEFB $1E,$1E,$1E,$1E,$1A,$1A,$1E,$1E ; }
+ $7636 DEFB $2A                             ; { #UDG$7637,$2A
+ $7637 DEFB $1E,$1E,$1E,$1A,$1A,$1A,$1A,$1A ; }
+ $763F DEFB $2A                             ; { #UDG$7640,$2A
+ $7640 DEFB $1E,$1E,$1A,$1A,$1E,$1E,$1E,$1E ; }
+ $7648 DEFB $2A                             ; { #UDG$7649,$2A
+ $7649 DEFB $1E,$1E,$1E,$1A,$1A,$1E,$1E,$1E ; }
+ $7651 DEFB $2A                             ; { #UDG$7652,$2A
+ $7652 DEFB $1E,$1E,$1A,$1A,$1A,$1A,$1E,$1E ; }
+ $765A DEFB $2A                             ; { #UDG$765B,$2A
+ $765B DEFB $1E,$1E,$1E,$1E,$1A,$1A,$1A,$1E ; }
+ $7663 DEFB $2A                             ; { #UDG$7664,$2A
+ $7664 DEFB $1E,$1E,$1E,$1E,$1E,$1E,$1E,$1E ; }
+ $766C DEFB $22                             ; { #UDG$766D,$22
+ $766D DEFB $1E,$1A,$1E,$1E,$1E,$1E,$1A,$1A ; }
+ $7675 DEFB $22                             ; { #UDG$7676,$22
+ $7676 DEFB $1E,$1E,$16,$1E,$1E,$1E,$1E,$1E ; }
+ $767E DEFB $22                             ; { #UDG$767F,$22
+ $767F DEFB $1E,$1E,$1E,$0C,$00,$00,$00,$00 ; }
+ $7687 DEFB $20                             ; { #UDG$7688,$20
+ $7688 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7690 DEFB $20                             ; { #UDG$7691,$20
+ $7691 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7699 DEFB $20                             ; { #UDG$769A,$20
+ $769A DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $76A2 DEFB $20                             ; { #UDG$76A3,$20
+ $76A3 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $76AB DEFB $20                             ; { #UDG$76AC,$20
+ $76AC DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$76B4 DEFB $2C                             ; { #UDG$76B5,$2C
+ $76B5 DEFB $B9,$FF,$BD,$FF,$BF,$FF,$BD,$FF ; }
+ $76BD DEFB $2C                             ; { #UDG$76BE,$2C
+ $76BE DEFB $BD,$BF,$FD,$BF,$FD,$FF,$F5,$FF ; }
+ $76C6 DEFB $2C                             ; { #UDG$76C7,$2C
+ $76C7 DEFB $FD,$F7,$F7,$FF,$DD,$DF,$FE,$F6 ; }
+ $76CF DEFB $2C                             ; { #UDG$76D0,$2C
+ $76D0 DEFB $FE,$FE,$DE,$DE,$F6,$BF,$29,$3D ; }
+ $76D8 DEFB $2A                             ; { #UDG$76D9,$2A
+ $76D9 DEFB $15,$1C,$1C,$1C,$1C,$1C,$1C,$14 ; }
+ $76E1 DEFB $2A                             ; { #UDG$76E2,$2A
+ $76E2 DEFB $14,$1C,$1C,$14,$14,$1C,$1C,$1C ; }
+ $76EA DEFB $2A                             ; { #UDG$76EB,$2A
+ $76EB DEFB $14,$14,$1C,$1C,$14,$1C,$1C,$1C ; }
+ $76F3 DEFB $2A                             ; { #UDG$76F4,$2A
+ $76F4 DEFB $14,$14,$14,$1C,$1C,$1C,$14,$14 ; }
+ $76FC DEFB $2A                             ; { #UDG$76FD,$2A
+ $76FD DEFB $1C,$1C,$1C,$1C,$14,$14,$14,$1C ; }
+ $7705 DEFB $2A                             ; { #UDG$7706,$2A
+ $7706 DEFB $1C,$1C,$14,$14,$1C,$1C,$1C,$1C ; }
+ $770E DEFB $22                             ; { #UDG$770F,$22
+ $770F DEFB $1C,$14,$1C,$1C,$1C,$1C,$1C,$1C ; }
+ $7717 DEFB $22                             ; { #UDG$7718,$22
+ $7718 DEFB $1C,$1C,$1C,$1C,$1C,$1C,$08,$00 ; }
+ $7720 DEFB $22                             ; { #UDG$7721,$22
+ $7721 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7729 DEFB $20                             ; { #UDG$772A,$20
+ $772A DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7732 DEFB $20                             ; { #UDG$7733,$20
+ $7733 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $773B DEFB $20                             ; { #UDG$773C,$20
+ $773C DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7744 DEFB $20                             ; { #UDG$7745,$20
+ $7745 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $774D DEFB $20                             ; { #UDG$774E,$20
+ $774E DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$7756 DEFB $2C                             ; { #UDG$7757,$2C
+ $7757 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $775F DEFB $2C                             ; { #UDG$7760,$2C
+ $7760 DEFB $30,$5C,$74,$3F,$F1,$BF,$F3,$BF ; }
+ $7768 DEFB $2C                             ; { #UDG$7769,$2C
+ $7769 DEFB $FB,$FF,$FF,$BF,$FB,$BF,$F9,$BF ; }
+ $7771 DEFB $2C                             ; { #UDG$7772,$2C
+ $7772 DEFB $F9,$BF,$F9,$BF,$FB,$FF,$FF,$7F ; }
+ $777A DEFB $2C                             ; { #UDG$777B,$2C
+ $777B DEFB $FF,$FB,$BD,$BB,$FF,$FB,$FC,$28 ; }
+ $7783 DEFB $2A                             ; { #UDG$7784,$2A
+ $7784 DEFB $28,$38,$38,$28,$28,$28,$38,$38 ; }
+ $778C DEFB $2A                             ; { #UDG$778D,$2A
+ $778D DEFB $28,$28,$28,$28,$38,$38,$28,$28 ; }
+ $7795 DEFB $2A                             ; { #UDG$7796,$2A
+ $7796 DEFB $28,$38,$28,$28,$38,$28,$28,$38 ; }
+ $779E DEFB $2A                             ; { #UDG$779F,$2A
+ $779F DEFB $38,$28,$28,$38,$28,$28,$28,$38 ; }
+ $77A7 DEFB $2A                             ; { #UDG$77A8,$2A
+ $77A8 DEFB $38,$38,$38,$38,$38,$28,$28,$38 ; }
+ $77B0 DEFB $22                             ; { #UDG$77B1,$22
+ $77B1 DEFB $38,$38,$38,$38,$38,$38,$38,$38 ; }
+ $77B9 DEFB $22                             ; { #UDG$77BA,$22
+ $77BA DEFB $38,$38,$38,$10,$00,$00,$00,$00 ; }
+ $77C2 DEFB $20                             ; { #UDG$77C3,$20
+ $77C3 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $77CB DEFB $20                             ; { #UDG$77CC,$20
+ $77CC DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $77D4 DEFB $20                             ; { #UDG$77D5,$20
+ $77D5 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $77DD DEFB $20                             ; { #UDG$77DE,$20
+ $77DE DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $77E6 DEFB $20                             ; { #UDG$77E7,$20
+ $77E7 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $77EF DEFB $20                             ; { #UDG$77F0,$20
+ $77F0 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (large)
+b$77F8 DEFB $28                             ; { #UDG$77F9,$28
+ $77F9 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7801 DEFB $28                             ; { #UDG$7802,$28
+ $7802 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $780A DEFB $2C                             ; { #UDG$780B,$2C
+ $780B DEFB $00,$00,$00,$00,$00,$00,$00,$10 ; }
+ $7813 DEFB $2C                             ; { #UDG$7814,$2C
+ $7814 DEFB $10,$38,$6E,$2E,$E2,$9A,$FA,$9A ; }
+ $781C DEFB $2C                             ; { #UDG$781D,$2C
+ $781D DEFB $FA,$9B,$FB,$9F,$FB,$DB,$7B,$5F ; }
+ $7825 DEFB $2C                             ; { #UDG$7826,$2C
+ $7826 DEFB $FF,$FF,$FB,$FF,$FA,$FF,$FE,$FE ; }
+ $782E DEFB $2C                             ; { #UDG$772F,$2C
+ $782F DEFB $FA,$7A,$7A,$7E,$78,$18,$18,$18 ; }
+ $7837 DEFB $2A                             ; { #UDG$7838,$2A
+ $7838 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7840 DEFB $2A                             ; { #UDG$7841,$2A
+ $7841 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7849 DEFB $2A                             ; { #UDG$784A,$2A
+ $784A DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7852 DEFB $22                             ; { #UDG$7853,$22
+ $7853 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $785B DEFB $22                             ; { #UDG$785C,$22
+ $785C DEFB $18,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7864 DEFB $20                             ; { #UDG$7865,$20
+ $7865 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $786D DEFB $20                             ; { #UDG$786E,$20
+ $786E DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7876 DEFB $20                             ; { #UDG$7877,$20
+ $7877 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $787F DEFB $20                             ; { #UDG$7880,$20
+ $7880 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7888 DEFB $20                             ; { #UDG$7889,$20
+ $7889 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7891 DEFB $20                             ; { #UDG$7892,$20
+ $7892 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$789A DEFB $2C                             ; { #UDG$789B,$2C
+ $789B DEFB $BF,$EC,$FE,$BC,$FE,$B9,$FF,$FA ; }
+ $78A3 DEFB $2C                             ; { #UDG$78A4,$2C
+ $78A4 DEFB $7F,$3C,$FF,$BF,$FF,$3D,$FF,$F9 ; }
+ $78AC DEFB $2A                             ; { #UDG$78AD,$2A
+ $78AD DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $78B5 DEFB $2A                             ; { #UDG$78B6,$2A
+ $78B6 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $78BE DEFB $2A                             ; { #UDG$78BF,$2A
+ $78BF DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $78C7 DEFB $22                             ; { #UDG$78C8,$22
+ $78C8 DEFB $18,$18,$18,$18,$18,$18,$18,$00 ; }
+
+; Tree (small)
+b$78D0 DEFB $2C                             ; { #UDG$78D1,$2C
+ $78D1 DEFB $00,$00,$18,$78,$58,$7E,$FB,$7F ; }
+ $78D9 DEFB $2C                             ; { #UDG$78DA,$2C
+ $78DA DEFB $FB,$FF,$BB,$FF,$BC,$FF,$3D,$FF ; }
+ $78E2 DEFB $2C                             ; { #UDG$78E3,$2c
+ $78E3 DEFB $3D,$FF,$59,$7F,$70,$18,$18,$18 ; }
+ $78EB DEFB $2A                             ; { #UDG$78EC,$2A
+ $78EC DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $78F4 DEFB $2A                             ; { #UDG$78F5,$2A
+ $78F5 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $78FD DEFB $22                             ; { #UDG$78FE,$22
+ $78FE DEFB $18,$18,$18,$18,$18,$00,$00,$00 ; }
+
+; Tree (small)
+b$7906 DEFB $2C                             ; { #UDG$7907,$2C
+ $7907 DEFB $00,$00,$00,$00,$30,$34,$B4,$B7 ; }
+ $790F DEFB $2C                             ; { #UDG$7910,$2C
+ $7910 DEFB $86,$FF,$B7,$BF,$FA,$B7,$F9,$3F ; }
+ $7918 DEFB $2C                             ; { #UDG$7919,$2C
+ $7919 DEFB $7B,$7F,$FB,$FF,$FA,$7E,$F8,$3E ; }
+ $7921 DEFB $2A                             ; { #UDG$7922,$2A
+ $7922 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $792A DEFB $2A                             ; { #UDG$792B,$2A
+ $792B DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7933 DEFB $22                             ; { #UDG$7934,$22
+ $7934 DEFB $18,$18,$18,$18,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$793C DEFB $2C                             ; { #UDG$793D,$2C
+ $793D DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7945 DEFB $2C                             ; { #UDG$7945,$2C
+ $7946 DEFB $00,$08,$3C,$BE,$FF,$EB,$AF,$EF ; }
+ $794E DEFB $2C                             ; { #UDG$794F,$2C 
+ $794F DEFB $EB,$6F,$FD,$FF,$7D,$7E,$78,$3E ; }
+ $7957 DEFB $2A                             ; { #UDG$7958,$2A
+ $7958 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7960 DEFB $2A                             ; { #UDG$7961,$2A
+ $7961 DEFB $18,$18,$18,$18,$18,$18,$18,$18 ; }
+ $7969 DEFB $22                             ; { #UDG$796A,$22
+ $796A DEFB $18,$18,$18,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7972 DEFB $2C                             ; { #UDG$7973,$2C
+ $7973 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $797B DEFB $2C                             ; { #UDG$797C,$2C
+ $797C DEFB $00,$00,$00,$10,$1C,$FE,$78,$FE ; }
+ $7984 DEFB $2C                             ; { #UDG$7985,$2C
+ $7985 DEFB $5E,$F8,$FE,$FF,$FA,$78,$FC,$B4 ; }
+ $798D DEFB $2C                             ; { #UDG$798E,$2C
+ $798E DEFB $7C,$54,$78,$10,$10,$10,$10,$10 ; }
+ $7996 DEFB $2A                             ; { #UDG$7997,$2A
+ $7997 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $799F DEFB $22                             ; { #UDG$79A0,$22
+ $79A0 DEFB $10,$10,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$79A8 DEFB $2C                             ; { #UDG$79A9,$2C
+ $79A9 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $79B1 DEFB $2C                             ; { #UDG$79B2,$2C
+ $79B2 DEFB $00,$00,$00,$00,$00,$00,$30,$30 ; }
+ $79BA DEFB $2C                             ; { #UDG$79BB,$2C
+ $79BB DEFB $70,$F8,$B8,$EC,$FC,$FC,$78,$FE ; }
+ $79C3 DEFB $2C                             ; { #UDG$79C4,$2C
+ $79C4 DEFB $FF,$FE,$F0,$7C,$18,$7C,$10,$10 ; }
+ $79CC DEFB $2A                             ; { #UDG$79CD,$2A
+ $79CD DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $79D5 DEFB $22                             ; { #UDG$79D6,$22
+ $79D6 DEFB $10,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$79DE DEFB $2C                             ; { #UDG$79DF,$2C
+ $79DF DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $79E7 DEFB $2C                             ; { #UDG$79E8,$2C
+ $79E8 DEFB $00,$00,$00,$00,$00,$00,$00,$30 ; }
+ $79F0 DEFB $2C                             ; { #UDG$79F1,$2C
+ $79F1 DEFB $30,$7C,$F8,$FE,$7C,$78,$7E,$7E ; }
+ $79F9 DEFB $2C                             ; { #UDG$79FA,$2C
+ $79FA DEFB $F8,$FF,$78,$3E,$38,$38,$38,$10 ; }
+ $7A02 DEFB $2A                             ; { #UDG$7A03,$2A
+ $7A03 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7A0B DEFB $20                             ; { #UDG$7A0C,$20
+ $7A0C DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7A14 DEFB $2C                             ; { #UDG$7A15,$2C
+ $7A15 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A1D DEFB $2C                             ; { #UDG$7A1E,$2C
+ $7A1E DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A26 DEFB $2C                             ; { #UDG$7A27,$2C
+ $7A27 DEFB $00,$10,$30,$38,$78,$78,$7C,$F8 ; }
+ $7A2F DEFB $2C                             ; { #UDG$7A30,$2C
+ $7A30 DEFB $7C,$78,$FE,$33,$7E,$38,$7E,$18 ; }
+ $7A38 DEFB $2A                             ; { #UDG$7A39,$2A
+ $7A39 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7A41 DEFB $20                             ; { #UDG$7A42,$20
+ $7A42 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7A4A DEFB $2C                             ; { #UDG$7A4B,$2C
+ $7A4B DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A53 DEFB $2C                             ; { #UDG$7A54,$2C
+ $7A54 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A5C DEFB $2C                             ; { #UDG$7A5D,$2C
+ $7A5D DEFB $00,$00,$08,$08,$18,$38,$1C,$7C ; }
+ $7A65 DEFB $2C                             ; { #UDG$7A66,$2C
+ $7A66 DEFB $5C,$7C,$74,$9C,$74,$1C,$70,$1C ; }
+ $7A6E DEFB $2A                             ; { #UDG$7A6F,$2A
+ $7A6F DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7A77 DEFB $20                             ; { #UDG$7A78,$20
+ $7A78 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7A80 DEFB $2C                             ; { #UDG$7A81,$2C
+ $7A81 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A89 DEFB $2C                             ; { #UDG$7A8A,$2C
+ $7A8A DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7A92 DEFB $2C                             ; { #UDG$7A93,$2C
+ $7A93 DEFB $00,$00,$00,$00,$08,$38,$3C,$7C ; }
+ $7A9B DEFB $2C                             ; { #UDG$7A9C,$2C
+ $7A9C DEFB $7C,$3C,$7E,$36,$7E,$3C,$74,$1E ; }
+ $7AA4 DEFB $2A                             ; { #UDG$7AA5,$2A
+ $7AA5 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7AAD DEFB $20                             ; { #UDG$7AAE,$20
+ $7AAE DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7AB6 DEFB $2C                             ; { #UDG$7AB7,$2C
+ $7AB7 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7ABF DEFB $2C                             ; { #UDG$7AC0,$2C
+ $7AC0 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7AC8 DEFB $2C                             ; { #UDG$7AC9,$2C
+ $7AC9 DEFB $00,$00,$00,$00,$00,$10,$70,$78 ; }
+ $7AD1 DEFB $2C                             ; { #UDG$7AD2,$2C
+ $7AD2 DEFB $3C,$38,$74,$5C,$D8,$FC,$7C,$78 ; }
+ $7ADA DEFB $2A                             ; { #UDG$7ADB,$2A
+ $7ADB DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7AE3 DEFB $20                             ; { #UDG$7AE4,$20
+ $7AE4 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7AEC DEFB $2C                             ; { #UDG$7AED,$2C
+ $7AED DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7AF5 DEFB $2C                             ; { #UDG$7AF6,$2C
+ $7AF6 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7AFE DEFB $2C                             ; { #UDG$7AFF,$2C
+ $7AFF DEFB $00,$00,$00,$00,$00,$00,$00,$30 ; }
+ $7B07 DEFB $2C                             ; { #UDG$7B08,$2C
+ $7B08 DEFB $70,$50,$78,$58,$FC,$FC,$78,$3C ; }
+ $7B10 DEFB $2A                             ; { #UDG$7B11,$2A
+ $7B11 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7B19 DEFB $20                             ; { #UDG$7B1A,$20
+ $7B1A DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7B22 DEFB $2C                             ; { #UDG$7B23,$2C
+ $7B23 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B2B DEFB $2C                             ; { #UDG$7B2C,$2C
+ $7B2C DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B34 DEFB $2C                             ; { #UDG$7B35,$2C
+ $7B35 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B3D DEFB $2C                             ; { #UDG$7B3E,$2C
+ $7B3E DEFB $10,$7C,$7C,$3C,$7C,$7E,$4C,$7C ; }
+ $7B46 DEFB $2A                             ; { #UDG$7B47,$2A
+ $7B47 DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7B4F DEFB $20                             ; { #UDG$7B50,$20
+ $7B50 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7B58 DEFB $2C                             ; { #UDG$7B59,$2C
+ $7B59 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B61 DEFB $2C                             ; { #UDG$7B62,$2C
+ $7B62 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B6A DEFB $2C                             ; { #UDG$7B6B,$2C
+ $7B6B DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B73 DEFB $2C                             ; { #UDG$7B74,$2C
+ $7B74 DEFB $00,$00,$18,$18,$7C,$7E,$FC,$78 ; }
+ $7B7C DEFB $2A                             ; { #UDG$7B7D,$2A
+ $7B7D DEFB $10,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7B85 DEFB $20                             ; { #UDG$7B86,$20
+ $7B86 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (small)
+b$7B8E DEFB $2C                             ; { #UDG$7B8F,$2C
+ $7B8F DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7B97 DEFB $2C                             ; { #UDG$7B98,$2C
+ $7B98 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BA0 DEFB $2C                             ; { #UDG$7BA1,$2C
+ $7BA1 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BA9 DEFB $2C                             ; { #UDG$7BAA,$2C
+ $7BAA DEFB $00,$00,$20,$28,$E0,$6C,$FE,$6C ; }
+ $7BB2 DEFB $2A                             ; { #UDG$7BB3,$2A
+ $7BB3 DEFB $00,$10,$10,$10,$10,$10,$10,$10 ; }
+ $7BBB DEFB $20                             ; { #UDG$7BBC,$20
+ $7BBC DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Tree (beyond horizon)
+b$7BC4 DEFB $2C                             ; { #UDG$7BC5,$2C
+ $7BC5 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BCD DEFB $2C                             ; { #UDG$7BCE,$2C
+ $7BCE DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BD6 DEFB $2C                             ; { #UDG$7BD7,$2C
+ $7BD7 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BDF DEFB $2C                             ; { #UDG$7BE0,$2C
+ $7BE0 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BE8 DEFB $2A                             ; { #UDG$7BE9,$2A
+ $7BE9 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+ $7BF1 DEFB $20                             ; { #UDG$7BF2,$20
+ $7BF2 DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; }
+
+; Storage for small tree graphic
+g$7BFA DEFB $2C
+ $7BFB DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C03 DEFB $2C
+ $7C04 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C0C DEFB $2C
+ $7C0D DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C15 DEFB $2C
+ $7C16 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C1E DEFB $2C
+ $7C1F DEFB $00,$00,$00,$00,$00,$00,$00,$00
+
+; Storage for tree graphic
+g$7C27 DEFB $2C
+ $7C28 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C30 DEFB $2C
+ $7C31 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C39 DEFB $2C
+ $7C3A DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C42 DEFB $2C
+ $7C43 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C4B DEFB $2A
+ $7C4C DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C54 DEFB $20
+ $7C55 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C5D DEFB $20
+ $7C5E DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C66 DEFB $20
+ $7C67 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C6F DEFB $20
+ $7C70 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C78 DEFB $20
+ $7C79 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C81 DEFB $20
+ $7C82 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C8A DEFB $20
+ $7C8B DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C93 DEFB $20
+ $7C94 DEFB $00,$00,$00,$00,$00,$00,$00,$00
+ $7C9C DEFB $2B
+ $7C9D DEFB $00,$00,$00,$00
+
+; Visible tree positions, in a grid 20 across 24 back to front.
+;
+; Store 00 for no tree, 20 for a small tree, and 40 for a large tree.
+g$7CA1 DEFS $02E0
+; Front row starts here.
+; If a tree is at 7F8E-7F92, the bike has crashed into it
+ $7F81 DEFS $20
+
+; Game end
+i$7FA1

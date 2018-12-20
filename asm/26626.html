@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 6802</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26566.html">67C6</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26626">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26713.html">6859</a></span></td>
+</tr>
+</table>
+<div class="description">6802: Track the photon bolt on screen</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="24457.html">5F89</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26626"></span>6802</td>
+<td class="instruction">LD A,($5DDE)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26629"></span>6805</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26631"></span>6807</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26632"></span>6808</td>
+<td class="instruction">LD A,($5DCB)</td>
+<td class="comment-11" rowspan="1">Is a bike being blown up?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26635"></span>680B</td>
+<td class="instruction">BIT 7,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26637"></span>680D</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1">Return if it is</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26638"></span>680E</td>
+<td class="instruction">LD A,($5DD8)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26641"></span>6811</td>
+<td class="instruction">CP C</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26642"></span>6812</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="26643"></span>
+<div class="comments">
+<div class="paragraph">
+This entry point is used by the routine at <a href="26173.html">663D</a>.
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26643"></span>6813</td>
+<td class="instruction">LD A,($5DCB)</td>
+<td class="comment-11" rowspan="1">Is a bike being blown up?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26646"></span>6816</td>
+<td class="instruction">BIT 7,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26648"></span>6818</td>
+<td class="instruction">RET NZ</td>
+<td class="comment-11" rowspan="1">Return if it is</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26649"></span>6819</td>
+<td class="instruction">LD DE,($5DDC)</td>
+<td class="comment-11" rowspan="1">Get the next photon bolt graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26653"></span>681D</td>
+<td class="instruction">LD IX,($5DDA)</td>
+<td class="comment-11" rowspan="1">Get the screen location for it</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26657"></span>6821</td>
+<td class="instruction">LD L,(IX+$00)</td>
+<td class="comment-11" rowspan="1">Put the display position in HL</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26660"></span>6824</td>
+<td class="instruction">LD H,(IX+$01)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26663"></span>6827</td>
+<td class="instruction">LD A,($5DD8)</td>
+<td class="comment-11" rowspan="1">Get current photon bolt offset</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26666"></span>682A</td>
+<td class="instruction">ADD A,L</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26667"></span>682B</td>
+<td class="instruction">LD L,A</td>
+<td class="comment-11" rowspan="1">Adjust display file to the right place</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26668"></span>682C</td>
+<td class="instruction">LD A,(HL)</td>
+<td class="comment-11" rowspan="1">Get the current display file offset</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26669"></span>682D</td>
+<td class="instruction">INC A</td>
+<td class="comment-11" rowspan="1">Is there anything here (eg: tree)?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26670"></span>682E</td>
+<td class="instruction">DEC A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26671"></span>682F</td>
+<td class="instruction">JR NZ,<a href="26758.html">$6886</a></td>
+<td class="comment-11" rowspan="1">Jump forward if there is something here</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26673"></span>6831</td>
+<td class="instruction">LD B,$08</td>
+<td class="comment-11" rowspan="1">8 lines</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="26675"></span>6833</td>
+<td class="instruction">LD A,(DE)</td>
+<td class="comment-11" rowspan="1">Get character</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26676"></span>6834</td>
+<td class="instruction">OR (HL)</td>
+<td class="comment-11" rowspan="2">Merge it with what's on screen and store it</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26677"></span>6835</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26678"></span>6836</td>
+<td class="instruction">INC H</td>
+<td class="comment-11" rowspan="1">Move to next line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26679"></span>6837</td>
+<td class="instruction">INC DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26680"></span>6838</td>
+<td class="instruction">DJNZ $6833</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26682"></span>683A</td>
+<td class="instruction">LD H,(IX+$02)</td>
+<td class="comment-11" rowspan="1">Get attribute address</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26685"></span>683D</td>
+<td class="instruction">LD A,$07</td>
+<td class="comment-11" rowspan="1">Set white INK</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26687"></span>683F</td>
+<td class="instruction">OR (HL)</td>
+<td class="comment-11" rowspan="2">Merge which what's there and store it</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26688"></span>6840</td>
+<td class="instruction">LD (HL),A</td>
+<td class="comment-01" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26689"></span>6841</td>
+<td class="instruction">LD A,($5DD9)</td>
+<td class="comment-11" rowspan="1">Get photon bolt distance</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26692"></span>6844</td>
+<td class="instruction">DEC A</td>
+<td class="comment-11" rowspan="1">One less</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26693"></span>6845</td>
+<td class="instruction">JR Z,<a href="26731.html">$686B</a></td>
+<td class="comment-11" rowspan="1">Jump if we've finished firing</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26695"></span>6847</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1">Back to offset store</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26697"></span>6849</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26699"></span>684B</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26701"></span>684D</td>
+<td class="instruction">LD ($5DDA),IX</td>
+<td class="comment-11" rowspan="1">Store next screen location</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26705"></span>6851</td>
+<td class="instruction">LD ($5DDC),DE</td>
+<td class="comment-11" rowspan="1">Store next graphic</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26709"></span>6855</td>
+<td class="instruction">LD ($5DD9),A</td>
+<td class="comment-11" rowspan="1">Store next distance</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="26712"></span>6858</td>
+<td class="instruction">RET</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="26566.html">67C6</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#26626">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="26713.html">6859</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

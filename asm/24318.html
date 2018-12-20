@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 5EFE</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="24064.html">5E00</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#24318">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="24360.html">5F28</a></span></td>
+</tr>
+</table>
+<div class="description">5EFE: Check for movement controls</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routines at <a href="26173.html">663D</a>, <a href="27107.html">69E3</a> and <a href="27330.html">6AC2</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="24318"></span>5EFE</td>
+<td class="instruction">LD HL,$5E25</td>
+<td class="comment-11" rowspan="1">Change this to modify what trees are drawn</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24321"></span>5F01</td>
+<td class="instruction">LD IX,$66DF</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24325"></span>5F05</td>
+<td class="instruction">LD A,($5DC9)</td>
+<td class="comment-11" rowspan="1">Are we using joystick?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24328"></span>5F08</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24330"></span>5F0A</td>
+<td class="instruction">JR Z,$5F18</td>
+<td class="comment-11" rowspan="1">Jump forward if using keyboard</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24332"></span>5F0C</td>
+<td class="instruction">IN A,($1F)</td>
+<td class="comment-11" rowspan="1">Read Kempston port</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24334"></span>5F0E</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1">Check for RIGHT</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24336"></span>5F10</td>
+<td class="instruction">JR NZ,<a href="24360.html">$5F28</a></td>
+<td class="comment-11" rowspan="1">Jump if moving right</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24338"></span>5F12</td>
+<td class="instruction">BIT 1,A</td>
+<td class="comment-11" rowspan="1">Check for LEFT</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24340"></span>5F14</td>
+<td class="instruction">JR NZ,<a href="24391.html">$5F47</a></td>
+<td class="comment-11" rowspan="1">Jump if moving left</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24342"></span>5F16</td>
+<td class="instruction">JR <a href="24422.html">$5F66</a></td>
+<td class="comment-11" rowspan="1">No movement - straighten up</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="24344"></span>5F18</td>
+<td class="instruction">LD A,$F7</td>
+<td class="comment-11" rowspan="1">Read 1 - 5</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24346"></span>5F1A</td>
+<td class="instruction">IN A,($FE)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24348"></span>5F1C</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1">Was 1 pressed?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24350"></span>5F1E</td>
+<td class="instruction">JR Z,<a href="24391.html">$5F47</a></td>
+<td class="comment-11" rowspan="1">Jump if moving left</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24352"></span>5F20</td>
+<td class="instruction">LD A,$EF</td>
+<td class="comment-11" rowspan="1">Read 0 - 6</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24354"></span>5F22</td>
+<td class="instruction">IN A,($FE)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24356"></span>5F24</td>
+<td class="instruction">BIT 0,A</td>
+<td class="comment-11" rowspan="1">Was 0 pressed?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="24358"></span>5F26</td>
+<td class="instruction">JR NZ,<a href="24422.html">$5F66</a></td>
+<td class="comment-11" rowspan="1">Jump if not - straighten up</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="24064.html">5E00</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#24318">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="24360.html">5F28</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

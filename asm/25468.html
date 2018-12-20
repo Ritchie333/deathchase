@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deathchase: Routine at 637C</title>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="../skoolkit.css" />
+
+</head>
+<body class="Asm-c">
+<table class="header">
+<tr>
+<td class="logo"><a href="../index.html">Deathchase</a></td>
+<td class="page-header">Routines</td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25457.html">6371</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25468">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25596.html">63FC</a></span></td>
+</tr>
+</table>
+<div class="description">637C: Move the plane across screen</div>
+<table class="disassembly">
+<tr>
+<td class="routine-comment" colspan="4">
+<div class="details">
+<div class="paragraph">
+Used by the routine at <a href="25402.html">633A</a>.
+</div>
+</div>
+<table class="input-0">
+<tr class="asm-input-header">
+<th colspan="2">Input</th>
+</tr>
+
+</table>
+<table class="output-0">
+<tr class="asm-output-header">
+<th colspan="2">Output</th>
+</tr>
+
+</table>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25468"></span>637C</td>
+<td class="instruction">LD A,($5DCA)</td>
+<td class="comment-11" rowspan="1">Get the enemy offset</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25471"></span>637F</td>
+<td class="instruction">LD HL,$7CB0</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25474"></span>6382</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25476"></span>6384</td>
+<td class="instruction">INC L</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25477"></span>6385</td>
+<td class="instruction">LD (HL),$00</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25479"></span>6387</td>
+<td class="instruction">CP $08</td>
+<td class="comment-11" rowspan="1">Is it above 8?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25481"></span>6389</td>
+<td class="instruction">JR C,$63CD</td>
+<td class="comment-11" rowspan="1">Jump if so</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25483"></span>638B</td>
+<td class="instruction">CP $14</td>
+<td class="comment-11" rowspan="1">Is it below 14?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25485"></span>638D</td>
+<td class="instruction">LD IX,($5DCD)</td>
+<td class="comment-11" rowspan="1">Get the current screen offset</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25489"></span>6391</td>
+<td class="instruction">JR NC,$63B2</td>
+<td class="comment-11" rowspan="1">Jump if below 14</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25491"></span>6393</td>
+<td class="instruction">INC IX</td>
+<td class="comment-11" rowspan="1">Move down a line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25493"></span>6395</td>
+<td class="instruction">INC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25495"></span>6397</td>
+<td class="instruction">INC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25497"></span>6399</td>
+<td class="instruction">LD H,(IX+$01)</td>
+<td class="comment-11" rowspan="1">Get the offset to draw at</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25500"></span>639C</td>
+<td class="instruction">LD L,(IX+$00)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25503"></span>639F</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25504"></span>63A0</td>
+<td class="instruction">LD HL,$4860</td>
+<td class="comment-11" rowspan="1">Make the offset the distance up from the horizon</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25507"></span>63A3</td>
+<td class="instruction">AND A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25508"></span>63A4</td>
+<td class="instruction">SBC HL,DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25510"></span>63A6</td>
+<td class="instruction">JR NC,$63AC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25512"></span>63A8</td>
+<td class="instruction">LD IX,$650F</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25516"></span>63AC</td>
+<td class="instruction">LD ($5DCD),IX</td>
+<td class="comment-11" rowspan="1">Set the new position</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25520"></span>63B0</td>
+<td class="instruction">JR $63CD</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25522"></span>63B2</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1">Move up a line</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25524"></span>63B4</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25526"></span>63B6</td>
+<td class="instruction">DEC IX</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25528"></span>63B8</td>
+<td class="instruction">LD L,(IX+$00)</td>
+<td class="comment-11" rowspan="1">Get the offset to draw at</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25531"></span>63BB</td>
+<td class="instruction">LD H,(IX+$01)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25534"></span>63BE</td>
+<td class="instruction">EX DE,HL</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25535"></span>63BF</td>
+<td class="instruction">LD HL,$40C0</td>
+<td class="comment-11" rowspan="1">Make the offset the distance from the horizon</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25538"></span>63C2</td>
+<td class="instruction">AND A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25539"></span>63C3</td>
+<td class="instruction">SBC HL,DE</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25541"></span>63C5</td>
+<td class="instruction">JR C,$63AC</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25543"></span>63C7</td>
+<td class="instruction">LD IX,$6500</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25547"></span>63CB</td>
+<td class="instruction">JR $63AC</td>
+<td class="comment-11" rowspan="1">Jump back to set new position, then continue</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25549"></span>63CD</td>
+<td class="instruction">LD A,($5DCA)</td>
+<td class="comment-11" rowspan="1">Get enemy offset</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25552"></span>63D0</td>
+<td class="instruction">LD HL,$5DE8</td>
+<td class="comment-11" rowspan="1">Is the bike moving?</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25555"></span>63D3</td>
+<td class="instruction">BIT 0,(HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25557"></span>63D5</td>
+<td class="instruction">JR Z,$63DB</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25559"></span>63D7</td>
+<td class="instruction">LD HL,$5DDF</td>
+<td class="comment-11" rowspan="1">Adjust enemy position to new bike position if we are turning</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25562"></span>63DA</td>
+<td class="instruction">SUB (HL)</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25563"></span>63DB</td>
+<td class="instruction">INC A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25564"></span>63DC</td>
+<td class="instruction">CP $00</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25566"></span>63DE</td>
+<td class="instruction">JR Z,$63E4</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25568"></span>63E0</td>
+<td class="instruction">CP $1E</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25570"></span>63E2</td>
+<td class="instruction">JR C,$63E8</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25572"></span>63E4</td>
+<td class="instruction">XOR A</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25573"></span>63E5</td>
+<td class="instruction">LD ($5DCB),A</td>
+<td class="comment-11" rowspan="1">Set no bonus enemy on screen</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-2"><span id="25576"></span>63E8</td>
+<td class="instruction">LD ($5DCA),A</td>
+<td class="comment-11" rowspan="1">Set no bonus enemy on screen</td>
+</tr>
+<tr>
+<td class="routine-comment" colspan="4">
+<span id="25579"></span>
+<div class="comments">
+<div class="paragraph">
+Rotate the helecopter blades
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25579"></span>63EB</td>
+<td class="instruction">LD A,($631B)</td>
+<td class="comment-11" rowspan="1">Graphic for left blade</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25582"></span>63EE</td>
+<td class="instruction">XOR $2A</td>
+<td class="comment-11" rowspan="1">Invert bits 1,3 and 5</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25584"></span>63F0</td>
+<td class="instruction">LD ($631B),A</td>
+<td class="comment-11" rowspan="1">Store it</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25587"></span>63F3</td>
+<td class="instruction">LD A,($6323)</td>
+<td class="comment-11" rowspan="1">Graphic for right blade</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25590"></span>63F6</td>
+<td class="instruction">XOR $2A</td>
+<td class="comment-11" rowspan="1">Invert bits 1,3 and 5</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25592"></span>63F8</td>
+<td class="instruction">LD ($6323),A</td>
+<td class="comment-11" rowspan="1">Store it</td>
+</tr>
+<tr>
+<td class="asm-label-0"></td>
+<td class="address-1"><span id="25595"></span>63FB</td>
+<td class="instruction">RET</td>
+<td class="comment-11" rowspan="1"></td>
+</tr>
+</table>
+<table class="asm-navigation">
+<tr>
+<td class="prev"><span class="prev-1">Prev: <a href="25457.html">6371</a></span></td>
+<td class="up">Up: <a href="../maps/all.html#25468">Map</a></td>
+<td class="next"><span class="next-1">Next: <a href="25596.html">63FC</a></span></td>
+</tr>
+</table>
+<footer>
+<div class="release"></div>
+<div class="copyright">Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.</div>
+<div class="created">Created using <a href="http://skoolkit.ca/">SkoolKit</a> 7.0.</div>
+</footer>
+</body>
+</html>

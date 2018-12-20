@@ -1,0 +1,29 @@
+[Game]
+Game=Deathchase
+Copyright=Copyright Mervyn Estcourt 1983. This disassembly by Ritchie Swann, 2018.
+[Page:Pokes]
+SectionType=ListItems
+[Poke:Pokes]
+Assorted POKEs for the game
+
+Infinite lives
+  26463,0
+
+Start with 'n' number of lives
+  26069,48 + n
+
+Invunerability
+  26379,62
+
+No trees
+  25792,201
+
+Difficulty level (will take effect after this sector)
+  25796,n - where
+    n = 171 - Default
+    n = 172 - Hurt Me Plenty
+    n = 173 - Ultra Violence
+    n = 174 - Nightmare!
+
+[OtherCode:Loading system]
+Source=deathchase_loader.skool
