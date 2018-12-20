@@ -1,0 +1,43 @@
+; Main loading system
+;
+;.
+; 1 REM (c) 1983 M.ESTCOURT / RANDOMIZE USR 23296
+; and a bunch of other stuff to fool the naive hacker
+; that there's a loading system at 5B00.
+; (There isn't, and from a single BASIC program it's technically impossible)
+;.
+; 2 CLEAR 32767 : BORDER 0 : RANDOMIZE USR 23840 : RANDOMIZE USR 0
+;.
+; 3 SAVE "DEATHCHASE" LINE 2
+;.
+; The BASIC is saved to start at line 2, which then passes control to #R$5D20
+c$5D20 LD A,$00     ;
+ $5D22 LD ($5C8D),A ; Set ATTR system variable to black PAPER and INK
+ $5D25 LD A,$02     ;
+ $5D27 CALL $1601   ; Open screen channel
+ $5D2A CALL $0D6B   ; CLS
+ $5D2D LD HL,$5C6B  ; DF-SZ
+ $5D30 LD (HL),$00  ; Set it to 0, so pressing BREAK will crash
+ $5D32 LD A,$FF     ; Flag for a headerless loader
+ $5D34 SCF          ; Set to denote a LOAD, not a VERIFY
+ $5D35 LD IX,$4000  ; Start of main block
+ $5D39 LD DE,$3F48  ; Length of main block
+; Load the main block. There's no valid code after this,
+; as it is overwritten by the main code block
+ $5D3C CALL $0556   ; LD-BYTES
+; After the main block is loaded, control returns here
+ $5D3F NOP          ; 
+; .... and a bunch of other NOPs until ....
+ $5D88 RET M
+; This returns control to the BASIC subsystem at $2D2B. The game BASIC is now:
+;.
+;
+; 1 POKE 23659,0
+;.
+;
+; 2 RANDOMIZE USR 25983: GO TO 1
+;.
+;
+; Control returns to the second statement in line 2 (this is set up by
+; the routine at $6B96 which saves the game). This then calls the main
+; entry point at $657F.
