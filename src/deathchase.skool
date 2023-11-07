@@ -1320,8 +1320,8 @@ c$65B3 LD HL,$5DC0   ; Clear all the status flags
  $663A CALL $6BFC    ; Print high score
 
 ; Main loop
-c$663D EI            ; Wait for NMI to fire to stop screen flicker
- $663E DI            ;
+c$663D EI            ; { Turn on interrupts, then turn them off again.
+ $663E DI            ; Doesn't seem to do much. }
  $663F CALL $669D    ; Check for input
  $6642 LD A,($5DDE)  ; Did we hit a bike?
  $6645 BIT 0,A       ; 
